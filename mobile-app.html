@@ -25,6 +25,36 @@ input{border:none;background:none;color:inherit;font:inherit;outline:none}
   --tab-h:64px;
 }
 
+/* Light Theme */
+body.light-theme{
+  --bg:#f5f5f5;--bg2:#ffffff;--bg3:#f0f0f0;--bg4:#e8e8e8;
+  --gold:#8b7355;--gold-light:#a0896b;--gold-dim:rgba(139,115,85,0.1);
+  --gold-border:rgba(139,115,85,0.3);
+  --white:#000;--text2:#666;--text3:#999;
+}
+
+body.light-theme #app{background:var(--bg)}
+body.light-theme .screen{background:var(--bg)}
+body.light-theme #tab-bar{background:var(--bg2);border-top-color:#e0e0e0}
+body.light-theme .modal-sheet{background:var(--bg2)}
+body.light-theme .modal-head{background:var(--bg2);border-bottom-color:#e0e0e0}
+body.light-theme .form-input{background:var(--bg2);border-color:#e0e0e0}
+body.light-theme .form-input:focus{border-color:var(--gold)}
+body.light-theme .restaurant-card{background:var(--bg2);border-color:#e0e0e0}
+body.light-theme .menu-item-card{background:var(--bg2);border-color:#e0e0e0}
+body.light-theme .voucher-banner{background:linear-gradient(135deg,#f9f6f0 0%,#f0ebe3 50%,#f9f6f0 100%)}
+body.light-theme .bonus-card{background:linear-gradient(135deg,#f9f6f0 0%,#f0ebe3 50%,#f9f6f0 100%)}
+body.light-theme .chat-msg.bot{background:var(--bg2);border-color:#e0e0e0}
+body.light-theme .chat-msg.user{background:var(--gold-dim);border-color:var(--gold-border)}
+body.light-theme .chat-bar input{background:var(--bg2);border-color:#e0e0e0}
+body.light-theme .chat-send{background:var(--gold-dim);border-color:var(--gold-border)}
+body.light-theme .qr-container{background:#fff}
+body.light-theme .stat-card{background:var(--bg2);border-color:#e0e0e0}
+body.light-theme .profile-item{border-bottom-color:#e0e0e0}
+body.light-theme .order-item{border-bottom-color:#e0e0e0}
+body.light-theme .cart-summary{background:var(--bg2);border-top-color:#e0e0e0}
+body.light-theme .menu-categories .menu-category .mc-title{color:var(--gold)}
+
 /* ===== APP ===== */
 #app{width:100%;max-width:430px;height:100dvh;background:var(--bg);position:relative;overflow:hidden}
 
@@ -80,6 +110,10 @@ input{border:none;background:none;color:inherit;font:inherit;outline:none}
 .home-header{display:flex;align-items:center;justify-content:space-between;padding:24px 20px 20px}
 .home-greeting{font-size:13px;color:var(--text2);font-weight:300;letter-spacing:1px}
 .home-name{font-size:28px;font-weight:300;letter-spacing:1px;margin-top:2px}
+.theme-toggle{width:40px;height:40px;border-radius:50%;background:var(--bg2);border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
+.theme-toggle:active{transform:scale(0.9)}
+.theme-toggle svg{width:20px;height:20px}
+.theme-toggle svg path{stroke:var(--gold)}
 
 /* Active Voucher Banner */
 .voucher-banner{margin:0 20px 20px;padding:16px;border-radius:var(--radius);background:linear-gradient(135deg,#1a1610 0%,#2a2218 50%,#1a1610 100%);border:1px solid var(--gold-border);cursor:pointer;transition:all .2s}
@@ -387,6 +421,8 @@ function getGreeting() {
 // ===== RENDER FUNCTIONS =====
 function renderHome() {
   const hasVoucher = activeVoucher && !activeVoucher.used;
+  const isLight = document.body.classList.contains('light-theme');
+  const themeIcon = isLight ? '🌙' : '☀️';
   
   return `
     <div class="home-header">
@@ -394,6 +430,7 @@ function renderHome() {
         <div class="home-greeting">${getGreeting()},</div>
         <div class="home-name">${USER.name}</div>
       </div>
+      <button class="theme-toggle" data-action="toggle-theme" title="Сменить тему">${themeIcon}</button>
     </div>
 
     ${hasVoucher ? `
@@ -650,6 +687,14 @@ document.getElementById('app').addEventListener('click', function(e) {
   if (action === 'navigate') {
     navigate(el.dataset.tab);
   }
+  else if (action === 'toggle-theme') {
+    document.body.classList.toggle('light-theme');
+    const isLight = document.body.classList.contains('light-theme');
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    // Re-render current screen to update theme icon
+    navigate(state.tab);
+    showToast(isLight ? 'Светлая тема' : 'Тёмная тема');
+  }
   else if (action === 'get-voucher') {
     const flight = document.getElementById('flightNumber').value;
     const boarding = document.getElementById('boardingPass').value;
@@ -738,6 +783,13 @@ document.getElementById('app').addEventListener('click', function(e) {
 // ===== INIT =====
 setTimeout(() => {
   document.getElementById('splash').classList.add('hidden');
+  
+  // Load saved theme
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-theme');
+  }
+  
   navigate('home');
 }, 1400);
 </script>
