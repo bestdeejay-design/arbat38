@@ -109,7 +109,8 @@ body.light-theme .menu-categories .menu-category .mc-title{color:var(--gold)}
 /* ===== HOME SCREEN ===== */
 .home-header{display:flex;align-items:center;justify-content:space-between;padding:24px 20px 20px}
 .home-greeting{font-size:13px;color:var(--text2);font-weight:300;letter-spacing:1px}
-.home-name{font-size:28px;font-weight:300;letter-spacing:1px;margin-top:2px}
+.home-name{font-size:28px;font-weight:300;letter-spacing:1px;margin-top:2px;color:#fff}
+body.light-theme .home-name{color:#000}
 .theme-toggle{width:40px;height:40px;border-radius:50%;background:var(--bg2);border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s}
 .theme-toggle:active{transform:scale(0.9)}
 .theme-toggle svg{width:20px;height:20px}
@@ -117,11 +118,13 @@ body.light-theme .menu-categories .menu-category .mc-title{color:var(--gold)}
 
 /* Active Voucher Banner */
 .voucher-banner{margin:0 20px 20px;padding:16px;border-radius:var(--radius);background:linear-gradient(135deg,#1a1610 0%,#2a2218 50%,#1a1610 100%);border:1px solid var(--gold-border);cursor:pointer;transition:all .2s}
+body.light-theme .voucher-banner{background:linear-gradient(135deg,#f9f6f0 0%,#f0ebe3 50%,#f9f6f0 100%)}
 .voucher-banner:active{transform:scale(0.98)}
 .voucher-banner .vb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .voucher-banner .vb-title{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:2px}
 .voucher-banner .vb-status{font-size:10px;color:var(--gold-light);background:var(--gold-dim);padding:4px 10px;border-radius:10px}
-.voucher-banner .vb-flight{font-size:18px;font-weight:300;margin-bottom:6px}
+.voucher-banner .vb-flight{font-size:18px;font-weight:300;margin-bottom:6px;color:#fff}
+body.light-theme .voucher-banner .vb-flight{color:#000}
 .voucher-banner .vb-details{font-size:11px;color:var(--text2)}
 
 /* Restaurant Cards */
@@ -156,7 +159,8 @@ body.light-theme .restaurant-card .rc-name{color:#000}
 /* ===== PROFILE SCREEN ===== */
 .profile-header{padding:24px 20px;display:flex;align-items:center;gap:16px}
 .profile-avatar{width:64px;height:64px;border-radius:50%;border:2px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:300;color:var(--gold)}
-.profile-info .pi-name{font-size:20px;font-weight:300;margin-bottom:4px}
+.profile-info .pi-name{font-size:20px;font-weight:300;margin-bottom:4px;color:#fff}
+body.light-theme .profile-info .pi-name{color:#000}
 .profile-info .pi-phone{font-size:12px;color:var(--text3)}
 .profile-menu{padding:0 20px}
 .profile-item{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid #151515;cursor:pointer}
