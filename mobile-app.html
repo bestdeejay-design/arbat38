@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0a">
+    <title>Arbat 38 - Ваучеры и Рестораны</title>
+    <style>
+/* ===== RESET ===== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:'TildaSans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0a0a;color:#fff;overflow:hidden;height:100dvh;display:flex;justify-content:center}
+a{color:inherit;text-decoration:none}
+button{border:none;background:none;color:inherit;font:inherit;cursor:pointer}
+input{border:none;background:none;color:inherit;font:inherit;outline:none}
+::-webkit-scrollbar{display:none}
+
+/* ===== VARS ===== */
+:root{
+  --bg:#0a0a0a;--bg2:#141414;--bg3:#1c1c1c;--bg4:#222;
+  --gold:#aa9570;--gold-light:#c4ad8a;--gold-dim:rgba(170,149,112,0.15);
+  --gold-border:rgba(170,149,112,0.25);
+  --white:#fff;--text2:#999;--text3:#555;
+  --radius:14px;--radius-sm:10px;
+  --tab-h:64px;
+}
+
+/* ===== APP ===== */
+#app{width:100%;max-width:430px;height:100dvh;background:var(--bg);position:relative;overflow:hidden}
+
+/* ===== SPLASH ===== */
+#splash{position:absolute;inset:0;z-index:100;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s,visibility .6s}
+#splash.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.splash-logo{width:140px;height:140px;border-radius:50%;background:#111;display:flex;align-items:center;justify-content:center;border:1px solid var(--gold-border);margin-bottom:20px}
+.splash-text{color:var(--gold);font-size:12px;letter-spacing:4px;text-transform:uppercase;font-weight:300}
+
+/* ===== SCREENS ===== */
+.screen{position:absolute;top:0;left:0;right:0;bottom:calc(var(--tab-h) + env(safe-area-inset-bottom));overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;opacity:0;visibility:hidden;transition:opacity .3s;padding-bottom:80px}
+.screen.active{opacity:1;visibility:visible}
+
+/* ===== TAB BAR ===== */
+#tab-bar{position:absolute;bottom:0;left:0;right:0;height:calc(var(--tab-h) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:var(--bg);border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-around;z-index:50}
+.tab-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;border-radius:16px;transition:all .2s;min-width:52px}
+.tab-btn.active{background:rgba(170,149,112,0.12)}
+.tab-btn svg{width:22px;height:22px}
+.tab-btn span{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);font-weight:500}
+.tab-btn.active span{color:var(--gold)}
+.tab-btn svg path,.tab-btn svg circle,.tab-btn svg rect,.tab-btn svg line{stroke:var(--text3);transition:stroke .2s}
+.tab-btn.active svg path,.tab-btn.active svg circle,.tab-btn.active svg rect,.tab-btn.active svg line{stroke:var(--gold)}
+
+/* ===== COMMON ===== */
+.section-title{font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--gold);padding:0 20px;margin-bottom:16px}
+.divider{height:1px;background:var(--gold-border);margin:0 20px}
+.btn-primary{background:var(--gold);color:#000;padding:14px 24px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;letter-spacing:1px;text-transform:uppercase;width:100%;cursor:pointer;transition:all .2s}
+.btn-primary:active{opacity:0.8;transform:scale(0.98)}
+.btn-secondary{border:1px solid var(--gold-border);color:var(--gold);padding:14px 24px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;letter-spacing:1px;text-transform:uppercase;width:100%;cursor:pointer;transition:all .2s}
+.btn-secondary:active{background:var(--gold-dim)}
+
+/* ===== VOUCHER SCREEN ===== */
+.voucher-header{padding:24px 20px;text-align:center}
+.voucher-header h1{font-size:24px;font-weight:300;letter-spacing:1px;margin-bottom:8px}
+.voucher-header p{font-size:13px;color:var(--text2);line-height:1.5}
+.voucher-form{padding:0 20px 20px}
+.form-group{margin-bottom:16px}
+.form-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;display:block}
+.form-input{width:100%;background:var(--bg2);border:1px solid #1e1e1e;border-radius:var(--radius-sm);padding:14px 16px;font-size:14px;color:#fff}
+.form-input:focus{border-color:var(--gold)}
+.form-input::placeholder{color:var(--text3)}
+
+/* Voucher QR Display */
+.voucher-display{display:none;padding:20px;text-align:center}
+.voucher-display.active{display:block}
+.qr-container{background:#fff;padding:20px;border-radius:var(--radius);display:inline-block;margin:20px 0}
+.voucher-info{background:var(--bg2);border:1px solid var(--gold-border);border-radius:var(--radius);padding:20px;margin-top:20px}
+.voucher-type{font-size:24px;font-weight:300;color:var(--gold-light);margin-bottom:12px}
+.voucher-details{font-size:12px;color:var(--text2);line-height:1.8}
+.voucher-valid{margin-top:16px;padding-top:16px;border-top:1px solid var(--gold-border);font-size:11px;color:var(--gold)}
+
+/* ===== HOME SCREEN ===== */
+.home-header{display:flex;align-items:center;justify-content:space-between;padding:24px 20px 20px}
+.home-greeting{font-size:13px;color:var(--text2);font-weight:300;letter-spacing:1px}
+.home-name{font-size:28px;font-weight:300;letter-spacing:1px;margin-top:2px}
+
+/* Active Voucher Banner */
+.voucher-banner{margin:0 20px 20px;padding:16px;border-radius:var(--radius);background:linear-gradient(135deg,#1a1610 0%,#2a2218 50%,#1a1610 100%);border:1px solid var(--gold-border);cursor:pointer;transition:all .2s}
+.voucher-banner:active{transform:scale(0.98)}
+.voucher-banner .vb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.voucher-banner .vb-title{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:2px}
+.voucher-banner .vb-status{font-size:10px;color:var(--gold-light);background:var(--gold-dim);padding:4px 10px;border-radius:10px}
+.voucher-banner .vb-flight{font-size:18px;font-weight:300;margin-bottom:6px}
+.voucher-banner .vb-details{font-size:11px;color:var(--text2)}
+
+/* Restaurant Cards */
+.restaurant-grid{padding:0 20px;display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.restaurant-card{background:var(--bg2);border:1px solid #1e1e1e;border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all .2s}
+.restaurant-card:active{border-color:var(--gold-border);transform:scale(0.98)}
+.restaurant-card .rc-img{width:100%;height:160px;background-size:cover;background-position:center}
+.restaurant-card .rc-content{padding:16px}
+.restaurant-card .rc-name{font-size:14px;font-weight:400;letter-spacing:1px;margin-bottom:6px}
+.restaurant-card .rc-meta{display:flex;align-items:center;gap:12px;font-size:11px;color:var(--text3)}
+.restaurant-card .rc-meta span{display:flex;align-items:center;gap:4px}
+
+/* ===== ORDER SCREEN ===== */
+.order-header{padding:24px 20px;border-bottom:1px solid #1a1a1a}
+.order-header h1{font-size:18px;font-weight:400;letter-spacing:1px}
+.order-items{padding:20px}
+.order-item{display:flex;align-items:center;gap:12px;padding:16px 0;border-bottom:1px solid #151515}
+.order-item .oi-img{width:64px;height:64px;border-radius:10px;background-size:cover;background-position:center;flex-shrink:0}
+.order-item .oi-info{flex:1}
+.order-item .oi-name{font-size:13px;font-weight:400;margin-bottom:4px}
+.order-item .oi-price{font-size:12px;color:var(--gold)}
+.order-item .oi-qty{display:flex;align-items:center;gap:12px}
+.qty-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--gold-border);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:16px}
+.qty-btn:active{background:var(--gold-dim)}
+
+/* Cart Summary */
+.cart-summary{padding:20px;background:var(--bg2);border-top:1px solid #1a1a1a;position:sticky;bottom:0}
+.cart-row{display:flex;justify-content:space-between;margin-bottom:12px;font-size:13px}
+.cart-row.total{font-size:16px;font-weight:500;color:var(--gold-light);padding-top:12px;border-top:1px solid var(--gold-border)}
+
+/* ===== PROFILE SCREEN ===== */
+.profile-header{padding:24px 20px;display:flex;align-items:center;gap:16px}
+.profile-avatar{width:64px;height:64px;border-radius:50%;border:2px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:300;color:var(--gold)}
+.profile-info .pi-name{font-size:20px;font-weight:300;margin-bottom:4px}
+.profile-info .pi-phone{font-size:12px;color:var(--text3)}
+.profile-menu{padding:0 20px}
+.profile-item{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid #151515;cursor:pointer}
+.profile-item:active{opacity:0.6}
+.profile-item .pi-left{display:flex;align-items:center;gap:12px}
+.profile-item .pi-icon{width:40px;height:40px;border-radius:10px;background:var(--gold-dim);display:flex;align-items:center;justify-content:center}
+.profile-item .pi-label{font-size:13px;font-weight:300}
+
+/* ===== MODAL ===== */
+.modal-wrap{position:fixed;top:0;left:0;right:0;bottom:0;z-index:80;display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:opacity .3s}
+.modal-wrap.open{opacity:1;visibility:visible}
+.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7)}
+.modal-sheet{position:relative;z-index:1;width:100%;max-width:430px;max-height:85vh;background:var(--bg);border-radius:20px 20px 0 0;overflow-y:auto;transform:translateY(100%);transition:transform .35s ease;border-top:1px solid var(--gold-border)}
+.modal-wrap.open .modal-sheet{transform:translateY(0)}
+.modal-head{position:sticky;top:0;background:var(--bg);padding:20px;border-bottom:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between;z-index:2}
+.modal-head h2{font-size:14px;font-weight:400;letter-spacing:2px;text-transform:uppercase}
+.modal-close{width:32px;height:32px;border-radius:50%;border:1px solid #2a2a2a;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text3);cursor:pointer}
+.modal-body{padding:20px}
+
+/* Menu Grid */
+.menu-categories{display:flex;flex-direction:column;gap:24px}
+.menu-category .mc-title{font-size:11px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.menu-item-card{background:var(--bg2);border:1px solid #1e1e1e;border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;transition:all .2s}
+.menu-item-card:active{border-color:var(--gold-border)}
+.menu-item-card .mic-img{width:100%;height:100px;background-size:cover;background-position:center}
+.menu-item-card .mic-content{padding:12px}
+.menu-item-card .mic-name{font-size:12px;font-weight:400;margin-bottom:6px}
+.menu-item-card .mic-price{font-size:13px;color:var(--gold);font-weight:500}
+.menu-item-card .mic-add{position:absolute;bottom:12px;right:12px;width:28px;height:28px;border-radius:50%;background:var(--gold);color:#000;display:flex;align-items:center;justify-content:center;font-size:18px}
+
+/* Toast Notification */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:var(--gold);color:#000;padding:12px 24px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;z-index:200;transition:transform .3s ease;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- SPLASH -->
+  <div id="splash">
+    <div class="splash-logo">
+      <svg width="90" height="90" viewBox="0 0 100 100">
+        <text x="10" y="40" font-size="18" fill="#aa9570" font-weight="600" font-family="Georgia,serif" letter-spacing="1">ARBAT</text>
+        <text x="48" y="72" font-size="38" fill="#aa9570" font-weight="700" font-family="Georgia,serif">38</text>
+        <text x="6" y="90" font-size="7" fill="#aa9570" letter-spacing="1.2" font-family="sans-serif" font-weight="300">GROUP OF COMPANIES</text>
+      </svg>
+    </div>
+    <div class="splash-text">Arbat 38</div>
+  </div>
+
+  <!-- SCREEN: Voucher -->
+  <div id="screen-voucher" class="screen">
+    <div class="voucher-header">
+      <h1>Получить ваучер</h1>
+      <p>При задержке рейса вы можете получить электронный ваучер на питание или воду</p>
+    </div>
+    
+    <div class="voucher-form" id="voucherForm">
+      <div class="form-group">
+        <label class="form-label">Номер рейса</label>
+        <input type="text" class="form-input" id="flightNumber" placeholder="Например: SU 1234">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Номер посадочного талона</label>
+        <input type="text" class="form-input" id="boardingPass" placeholder="Например: 12A">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Фамилия (как в билете)</label>
+        <input type="text" class="form-input" id="lastName" placeholder="Например: Иванов">
+      </div>
+      <button class="btn-primary" data-action="get-voucher">Получить ваучер</button>
+    </div>
+
+    <div class="voucher-display" id="voucherDisplay">
+      <h2 style="font-size:18px;font-weight:400;margin-bottom:16px">Ваш ваучер</h2>
+      <div class="qr-container">
+        <svg width="200" height="200" viewBox="0 0 200 200">
+          <rect width="200" height="200" fill="#fff"/>
+          <g id="qrCode"></g>
+        </svg>
+      </div>
+      <div class="voucher-info">
+        <div class="voucher-type" id="voucherType">Горячее питание</div>
+        <div class="voucher-details" id="voucherDetails">
+          Рейс: SU 1234<br>
+          Пассажир: Иванов<br>
+          Тип: Горячее питание<br>
+          Сумма: до 500 ₽
+        </div>
+        <div class="voucher-valid" id="voucherValid">
+          Действителен до: 16.04.2026 23:59
+        </div>
+      </div>
+      <div style="margin-top:20px">
+        <button class="btn-secondary" data-action="back-to-form">Получить другой ваучер</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: Home -->
+  <div id="screen-home" class="screen"></div>
+
+  <!-- SCREEN: Restaurants -->
+  <div id="screen-restaurants" class="screen"></div>
+
+  <!-- SCREEN: Orders -->
+  <div id="screen-orders" class="screen"></div>
+
+  <!-- SCREEN: Profile -->
+  <div id="screen-profile" class="screen"></div>
+
+  <!-- TAB BAR -->
+  <div id="tab-bar">
+    <button class="tab-btn" data-action="navigate" data-tab="voucher">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <line x1="9" y1="9" x2="15" y2="15"/>
+        <line x1="15" y1="9" x2="9" y2="15"/>
+      </svg>
+      <span>Ваучер</span>
+    </button>
+    <button class="tab-btn active" data-action="navigate" data-tab="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      <span>Главная</span>
+    </button>
+    <button class="tab-btn" data-action="navigate" data-tab="restaurants">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2">
+        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/>
+        <path d="M7 2v20"/>
+        <path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/>
+      </svg>
+      <span>Рестораны</span>
+    </button>
+    <button class="tab-btn" data-action="navigate" data-tab="orders">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+        <path d="M14 2v6h6"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+      </svg>
+      <span>Заказы</span>
+    </button>
+    <button class="tab-btn" data-action="navigate" data-tab="profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M20 21c0-4.42-3.58-8-8-8s-8 3.58-8 8"/>
+      </svg>
+      <span>Кабинет</span>
+    </button>
+  </div>
+
+  <!-- MENU MODAL -->
+  <div id="menu-modal" class="modal-wrap">
+    <div class="modal-overlay" data-action="close-modal"></div>
+    <div class="modal-sheet">
+      <div class="modal-head">
+        <h2 id="modal-title">Меню</h2>
+        <div class="modal-close" data-action="close-modal">&times;</div>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+// ===== DATA =====
+const USER = {
+  phone: '+7 (999) 123-45-67',
+  name: 'Михаил',
+  bonuses: 3723,
+  orders: 4,
+  favorites: 12
+};
+
+let activeVoucher = {
+  flight: 'SU 1234',
+  type: 'Горячее питание',
+  amount: 500,
+  validUntil: '16.04.2026 23:59',
+  used: false
+};
+
+const AIRPORTS = [
+  { code: 'SVO', name: 'Шереметьево' },
+  { code: 'VKO', name: 'Внуково' },
+  { code: 'DME', name: 'Домодедово' }
+];
+
+const RESTAURANTS = [
+  { 
+    id: 1, 
+    name: 'BLACK STAR BURGER', 
+    type: 'Бургеры',
+    airport: 'SVO',
+    terminal: 'B',
+    rating: 4.5,
+    time: '15-20 мин',
+    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&h=400&fit=crop',
+    menu: [
+      { category: 'Бургеры', items: [
+        { id: 101, name: 'Classic Burger', price: 690, image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&h=200&fit=crop' },
+        { id: 102, name: 'Black Star Burger', price: 890, image: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=200&h=200&fit=crop' }
+      ]},
+      { category: 'Напитки', items: [
+        { id: 103, name: 'Лимонад', price: 290, image: 'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=200&h=200&fit=crop' }
+      ]}
+    ]
+  },
+  { 
+    id: 2, 
+    name: 'MO!BAR', 
+    type: 'Бар',
+    airport: 'SVO',
+    terminal: 'C',
+    rating: 4.7,
+    time: '10-15 мин',
+    image: 'https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600&h=400&fit=crop',
+    menu: [
+      { category: 'Коктейли', items: [
+        { id: 201, name: 'MO! Signature', price: 690, image: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=200&h=200&fit=crop' },
+        { id: 202, name: 'Espresso Martini', price: 650, image: 'https://images.unsplash.com/photo-1583898350903-99fa829dad3d?w=200&h=200&fit=crop' }
+      ]}
+    ]
+  },
+  { 
+    id: 3, 
+    name: 'THE IRISH BAR', 
+    type: 'Паб',
+    airport: 'VKO',
+    terminal: 'A',
+    rating: 4.6,
+    time: '20-25 мин',
+    image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=600&h=400&fit=crop',
+    menu: [
+      { category: 'Основные блюда', items: [
+        { id: 301, name: 'Fish & Chips', price: 790, image: 'https://images.unsplash.com/photo-1579208030886-b1f5b7e9b4fe?w=200&h=200&fit=crop' }
+      ]}
+    ]
+  }
+];
+
+let cart = [];
+let currentRestaurant = null;
+
+// ===== STATE =====
+const state = { tab: 'home' };
+
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 6) return 'Доброй ночи';
+  if (h < 12) return 'Доброе утро';
+  if (h < 18) return 'Добрый день';
+  return 'Добрый вечер';
+}
+
+// ===== RENDER FUNCTIONS =====
+function renderHome() {
+  const hasVoucher = activeVoucher && !activeVoucher.used;
+  
+  return `
+    <div class="home-header">
+      <div>
+        <div class="home-greeting">${getGreeting()},</div>
+        <div class="home-name">${USER.name}</div>
+      </div>
+    </div>
+
+    ${hasVoucher ? `
+    <div class="voucher-banner" data-action="show-voucher">
+      <div class="vb-header">
+        <div class="vb-title">Активный ваучер</div>
+        <div class="vb-status">Действителен</div>
+      </div>
+      <div class="vb-flight">Рейс ${activeVoucher.flight}</div>
+      <div class="vb-details">${activeVoucher.type} · до ${activeVoucher.amount} ₽</div>
+    </div>
+    ` : ''}
+
+    <div class="section-title">Рестораны в вашем аэропорту</div>
+    <div class="restaurant-grid">
+      ${RESTAURANTS.map(r => `
+        <div class="restaurant-card" data-action="open-restaurant" data-id="${r.id}">
+          <div class="rc-img" style="background-image: url('${r.image}')"></div>
+          <div class="rc-content">
+            <div class="rc-name">${r.name}</div>
+            <div class="rc-meta">
+              <span>⭐ ${r.rating}</span>
+              <span>🕐 ${r.time}</span>
+              <span>📍 Терминал ${r.terminal}</span>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderRestaurants() {
+  return `
+    <div style="padding:24px 20px 16px">
+      <h1 style="font-size:18px;font-weight:400;letter-spacing:1px">Рестораны</h1>
+      <p style="font-size:13px;color:var(--text2);margin-top:8px">Выберите ресторан для предзаказа</p>
+    </div>
+    <div class="restaurant-grid">
+      ${RESTAURANTS.map(r => `
+        <div class="restaurant-card" data-action="open-restaurant" data-id="${r.id}">
+          <div class="rc-img" style="background-image: url('${r.image}')"></div>
+          <div class="rc-content">
+            <div class="rc-name">${r.name}</div>
+            <div class="rc-meta">
+              <span>⭐ ${r.rating}</span>
+              <span>🕐 ${r.time}</span>
+              <span>📍 ${r.airport}, Т${r.terminal}</span>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderOrders() {
+  if (cart.length === 0) {
+    return `
+      <div style="padding:60px 20px;text-align:center">
+        <div style="font-size:64px;margin-bottom:20px">🛒</div>
+        <h2 style="font-size:20px;font-weight:400;margin-bottom:12px">Корзина пуста</h2>
+        <p style="font-size:13px;color:var(--text2)">Добавьте блюда из меню ресторана</p>
+      </div>
+    `;
+  }
+
+  const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  const voucherDiscount = activeVoucher && !activeVoucher.used ? Math.min(activeVoucher.amount, total) : 0;
+  const finalTotal = total - voucherDiscount;
+
+  return `
+    <div class="order-header">
+      <h1>Ваш заказ</h1>
+    </div>
+    <div class="order-items">
+      ${cart.map((item, idx) => `
+        <div class="order-item">
+          <div class="oi-img" style="background-image: url('${item.image}')"></div>
+          <div class="oi-info">
+            <div class="oi-name">${item.name}</div>
+            <div class="oi-price">${item.price} ₽</div>
+          </div>
+          <div class="oi-qty">
+            <button class="qty-btn" data-action="decrease-qty" data-idx="${idx}">−</button>
+            <span style="font-size:14px;min-width:20px;text-align:center">${item.qty}</span>
+            <button class="qty-btn" data-action="increase-qty" data-idx="${idx}">+</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="cart-summary">
+      <div class="cart-row">
+        <span>Сумма</span>
+        <span>${total.toLocaleString()} ₽</span>
+      </div>
+      ${voucherDiscount > 0 ? `
+      <div class="cart-row" style="color:var(--gold)">
+        <span>Ваучер</span>
+        <span>−${voucherDiscount.toLocaleString()} ₽</span>
+      </div>
+      ` : ''}
+      <div class="cart-row total">
+        <span>Итого</span>
+        <span>${finalTotal.toLocaleString()} ₽</span>
+      </div>
+      <button class="btn-primary" style="margin-top:16px" data-action="checkout">
+        Оформить заказ
+      </button>
+    </div>
+  `;
+}
+
+function renderProfile() {
+  return `
+    <div class="profile-header">
+      <div class="profile-avatar">${USER.name[0]}</div>
+      <div class="profile-info">
+        <div class="pi-name">${USER.name}</div>
+        <div class="pi-phone">${USER.phone}</div>
+      </div>
+    </div>
+
+    <div style="padding:0 20px 20px">
+      <div style="background:var(--bg2);border:1px solid var(--gold-border);border-radius:var(--radius);padding:20px">
+        <div style="font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">Бонусы</div>
+        <div style="font-size:32px;font-weight:300;color:var(--gold-light)">${USER.bonuses.toLocaleString()}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:8px">Гастросет · 7% начисление · 50% списание</div>
+      </div>
+    </div>
+
+    <div class="profile-menu">
+      <div class="profile-item">
+        <div class="pi-left">
+          <div class="pi-icon">🎁</div>
+          <div class="pi-label">Мои ваучеры</div>
+        </div>
+        <span style="color:var(--text3)">›</span>
+      </div>
+      <div class="profile-item">
+        <div class="pi-left">
+          <div class="pi-icon">📋</div>
+          <div class="pi-label">История заказов</div>
+        </div>
+        <span style="color:var(--text3)">›</span>
+      </div>
+      <div class="profile-item">
+        <div class="pi-left">
+          <div class="pi-icon">⭐</div>
+          <div class="pi-label">Избранные рестораны</div>
+        </div>
+        <span style="color:var(--text3)">›</span>
+      </div>
+      <div class="profile-item">
+        <div class="pi-left">
+          <div class="pi-icon">⚙️</div>
+          <div class="pi-label">Настройки</div>
+        </div>
+        <span style="color:var(--text3)">›</span>
+      </div>
+      <div class="profile-item">
+        <div class="pi-left">
+          <div class="pi-icon">❓</div>
+          <div class="pi-label">Помощь</div>
+        </div>
+        <span style="color:var(--text3)">›</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderMenu(restaurant) {
+  return `
+    <div style="margin-bottom:20px">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:8px">${restaurant.airport} · Терминал ${restaurant.terminal}</div>
+      <h2 style="font-size:20px;font-weight:400;letter-spacing:1px">${restaurant.name}</h2>
+      <div style="display:flex;gap:12px;margin-top:8px;font-size:12px;color:var(--text3)">
+        <span>⭐ ${restaurant.rating}</span>
+        <span>🕐 ${restaurant.time}</span>
+      </div>
+    </div>
+    <div class="menu-categories">
+      ${restaurant.menu.map(cat => `
+        <div class="menu-category">
+          <div class="mc-title">${cat.category}</div>
+          <div class="menu-grid">
+            ${cat.items.map(item => `
+              <div class="menu-item-card" data-action="add-to-cart" data-id="${item.id}" data-name="${item.name}" data-price="${item.price}" data-image="${item.image}">
+                <div class="mic-img" style="background-image: url('${item.image}')"></div>
+                <div class="mic-content">
+                  <div class="mic-name">${item.name}</div>
+                  <div class="mic-price">${item.price} ₽</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ===== QR CODE GENERATOR =====
+function generateQR() {
+  const qr = document.getElementById('qrCode');
+  let qrHTML = '';
+  const size = 20;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      if (Math.random() > 0.5) {
+        qrHTML += `<rect x="${x * 10}" y="${y * 10}" width="10" height="10" fill="#000"/>`;
+      }
+    }
+  }
+  qr.innerHTML = qrHTML;
+}
+
+// ===== NAVIGATION =====
+function navigate(tab) {
+  state.tab = tab;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  
+  const scr = document.getElementById('screen-' + tab);
+  const btn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+  
+  switch(tab) {
+    case 'home': scr.innerHTML = renderHome(); break;
+    case 'restaurants': scr.innerHTML = renderRestaurants(); break;
+    case 'orders': scr.innerHTML = renderOrders(); break;
+    case 'profile': scr.innerHTML = renderProfile(); break;
+    case 'voucher': break;
+  }
+  
+  scr.classList.add('active');
+  if (btn) btn.classList.add('active');
+  scr.scrollTop = 0;
+}
+
+// ===== TOAST =====
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// ===== EVENT HANDLERS =====
+document.getElementById('app').addEventListener('click', function(e) {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const action = el.dataset.action;
+
+  if (action === 'navigate') {
+    navigate(el.dataset.tab);
+  }
+  else if (action === 'get-voucher') {
+    const flight = document.getElementById('flightNumber').value;
+    const boarding = document.getElementById('boardingPass').value;
+    const lastName = document.getElementById('lastName').value;
+    
+    if (!flight || !boarding || !lastName) {
+      showToast('Заполните все поля');
+      return;
+    }
+    
+    activeVoucher = {
+      flight: flight.toUpperCase(),
+      type: 'Горячее питание',
+      amount: 500,
+      validUntil: '16.04.2026 23:59',
+      used: false
+    };
+    
+    document.getElementById('voucherForm').style.display = 'none';
+    document.getElementById('voucherDisplay').classList.add('active');
+    document.getElementById('voucherDetails').innerHTML = `
+      Рейс: ${activeVoucher.flight}<br>
+      Пассажир: ${lastName}<br>
+      Тип: ${activeVoucher.type}<br>
+      Сумма: до ${activeVoucher.amount} ₽
+    `;
+    generateQR();
+    showToast('Ваучер получен!');
+  }
+  else if (action === 'back-to-form') {
+    document.getElementById('voucherForm').style.display = 'block';
+    document.getElementById('voucherDisplay').classList.remove('active');
+  }
+  else if (action === 'show-voucher') {
+    navigate('voucher');
+  }
+  else if (action === 'open-restaurant') {
+    const id = parseInt(el.dataset.id);
+    currentRestaurant = RESTAURANTS.find(r => r.id === id);
+    if (currentRestaurant) {
+      document.getElementById('modal-title').textContent = currentRestaurant.name;
+      document.getElementById('modal-body').innerHTML = renderMenu(currentRestaurant);
+      document.getElementById('menu-modal').classList.add('open');
+    }
+  }
+  else if (action === 'close-modal') {
+    document.getElementById('menu-modal').classList.remove('open');
+  }
+  else if (action === 'add-to-cart') {
+    const item = {
+      id: parseInt(el.dataset.id),
+      name: el.dataset.name,
+      price: parseInt(el.dataset.price),
+      image: el.dataset.image,
+      qty: 1
+    };
+    
+    const existing = cart.find(c => c.id === item.id);
+    if (existing) {
+      existing.qty++;
+    } else {
+      cart.push(item);
+    }
+    
+    showToast(`${item.name} добавлен в корзину`);
+  }
+  else if (action === 'increase-qty' || action === 'decrease-qty') {
+    const idx = parseInt(el.dataset.idx);
+    if (action === 'increase-qty') {
+      cart[idx].qty++;
+    } else if (action === 'decrease-qty') {
+      cart[idx].qty--;
+      if (cart[idx].qty === 0) {
+        cart.splice(idx, 1);
+      }
+    }
+    document.getElementById('screen-orders').innerHTML = renderOrders();
+  }
+  else if (action === 'checkout') {
+    showToast('Заказ оформлен! Переход к оплате...');
+    cart = [];
+    setTimeout(() => navigate('home'), 1500);
+  }
+});
+
+// ===== INIT =====
+setTimeout(() => {
+  document.getElementById('splash').classList.add('hidden');
+  navigate('home');
+}, 1400);
+</script>
+</body>
+</html>

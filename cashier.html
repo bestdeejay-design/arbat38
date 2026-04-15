@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Arbat 38 - Кассир</title>
+    <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0a0a0a;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+:root {
+    --gold: #aa9570;
+    --gold-light: #c4ad8a;
+    --gold-dim: rgba(170,149,112,0.15);
+    --gold-border: rgba(170,149,112,0.25);
+    --success: #4CAF50;
+    --error: #f44336;
+    --warning: #FF9800;
+}
+
+.container {
+    max-width: 800px;
+    width: 90%;
+    text-align: center;
+}
+
+/* Header */
+.header {
+    margin-bottom: 40px;
+}
+
+.header h1 {
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 8px;
+}
+
+.header p {
+    font-size: 14px;
+    color: #999;
+}
+
+/* Scanner Area */
+.scanner-area {
+    background: #141414;
+    border: 2px dashed var(--gold-border);
+    border-radius: 20px;
+    padding: 60px 40px;
+    margin-bottom: 30px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.scanner-area:hover {
+    border-color: var(--gold);
+    background: var(--gold-dim);
+}
+
+.scanner-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+}
+
+.scanner-area h2 {
+    font-size: 20px;
+    font-weight: 400;
+    margin-bottom: 12px;
+}
+
+.scanner-area p {
+    font-size: 14px;
+    color: #999;
+}
+
+.btn {
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    font-family: inherit;
+    margin: 8px;
+}
+
+.btn-primary {
+    background: var(--gold);
+    color: #000;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid var(--gold-border);
+    color: var(--gold);
+}
+
+.btn-secondary:hover {
+    background: var(--gold-dim);
+}
+
+.btn-success {
+    background: var(--success);
+    color: #fff;
+}
+
+.btn-error {
+    background: var(--error);
+    color: #fff;
+}
+
+/* Result Display */
+.result-display {
+    display: none;
+    background: #141414;
+    border: 2px solid var(--gold-border);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.result-display.valid {
+    border-color: var(--success);
+}
+
+.result-display.invalid {
+    border-color: var(--error);
+}
+
+.result-display.expired {
+    border-color: var(--warning);
+}
+
+.result-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 30px;
+}
+
+.result-icon {
+    font-size: 64px;
+}
+
+.result-title {
+    font-size: 32px;
+    font-weight: 300;
+    text-align: left;
+}
+
+.result-title.valid {
+    color: var(--success);
+}
+
+.result-title.invalid {
+    color: var(--error);
+}
+
+.result-title.expired {
+    color: var(--warning);
+}
+
+.result-info {
+    text-align: left;
+    background: rgba(0,0,0,0.3);
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #2a2a2a;
+    font-size: 15px;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    color: #999;
+}
+
+.info-value {
+    font-weight: 500;
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+/* Manual Input */
+.manual-input {
+    display: none;
+    background: #141414;
+    border: 1px solid var(--gold-border);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px;
+}
+
+.manual-input h3 {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 24px;
+    color: var(--gold);
+}
+
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px 16px;
+    background: #1c1c1c;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 16px;
+    font-family: inherit;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--gold);
+}
+
+/* Stats Bar */
+.stats-bar {
+    display: flex;
+    justify-content: space-around;
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 40px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--gold-light);
+    margin-bottom: 8px;
+}
+
+.stat-label {
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Toast */
+.toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: var(--gold);
+    color: #000;
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .scanner-area {
+        padding: 40px 20px;
+    }
+    
+    .result-display {
+        padding: 30px 20px;
+    }
+    
+    .result-title {
+        font-size: 24px;
+    }
+    
+    .actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <h1>🍽️ ARBAT 38</h1>
+        <p>Точка питания: BLACK STAR BURGER · SVO Терминал B</p>
+    </div>
+
+    <!-- Scanner -->
+    <div class="scanner-area" id="scanner" onclick="startScanning()">
+        <div class="scanner-icon">📷</div>
+        <h2>Сканировать QR-код</h2>
+        <p>Нажмите для активации камеры или введите код вручную</p>
+        <div style="margin-top: 24px;">
+            <button class="btn btn-primary" onclick="event.stopPropagation(); startScanning()">Открыть камеру</button>
+            <button class="btn btn-secondary" onclick="event.stopPropagation(); showManualInput()">Ввести вручную</button>
+        </div>
+    </div>
+
+    <!-- Manual Input -->
+    <div class="manual-input" id="manualInput">
+        <h3>Ввести код ваучера вручную</h3>
+        <div class="input-group">
+            <label>Код ваучера</label>
+            <input type="text" id="voucherCode" placeholder="Например: VCH-123456789" autofocus>
+        </div>
+        <div style="margin-top: 24px;">
+            <button class="btn btn-primary" onclick="checkVoucher()">Проверить ваучер</button>
+            <button class="btn btn-secondary" onclick="hideManualInput()">Отмена</button>
+        </div>
+    </div>
+
+    <!-- Result Display -->
+    <div class="result-display" id="resultDisplay">
+        <div class="result-header">
+            <div class="result-icon" id="resultIcon">✅</div>
+            <div class="result-title" id="resultTitle">Действителен</div>
+        </div>
+        
+        <div class="result-info" id="resultInfo">
+            <div class="info-row">
+                <span class="info-label">Тип ваучера</span>
+                <span class="info-value" id="infoType">Горячее питание</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Номер рейса</span>
+                <span class="info-value" id="infoFlight">SU 1234</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Пассажир</span>
+                <span class="info-value" id="infoPassenger">Иванов И.И.</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Сумма</span>
+                <span class="info-value" id="infoAmount">500 ₽</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Действителен до</span>
+                <span class="info-value" id="infoValid">16.04.2026 23:59</span>
+            </div>
+        </div>
+
+        <div class="actions" id="resultActions">
+            <button class="btn btn-success" onclick="redeemVoucher()">✓ Погасить и выдать</button>
+            <button class="btn btn-secondary" onclick="resetScanner()">Отмена</button>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-value" id="statToday">23</div>
+            <div class="stat-label">Сегодня</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="statWeek">156</div>
+            <div class="stat-label">Неделя</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="statMonth">642</div>
+            <div class="stat-label">Месяц</div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+let currentVoucher = null;
+
+// Demo vouchers database
+const vouchersDB = {
+    'VCH-123456789': {
+        type: 'Горячее питание',
+        flight: 'SU 1234',
+        passenger: 'Иванов И.И.',
+        amount: 500,
+        validUntil: '16.04.2026 23:59',
+        status: 'valid',
+        redeemed: false
+    },
+    'VCH-987654321': {
+        type: 'Вода',
+        flight: 'SU 5678',
+        passenger: 'Петров П.П.',
+        amount: 150,
+        validUntil: '16.04.2026 23:59',
+        status: 'valid',
+        redeemed: false
+    },
+    'VCH-111111111': {
+        type: 'Горячее питание',
+        flight: 'DP 9012',
+        passenger: 'Сидоров С.С.',
+        amount: 500,
+        validUntil: '15.04.2026 12:00',
+        status: 'expired',
+        redeemed: false
+    },
+    'VCH-222222222': {
+        type: 'Вода',
+        flight: 'SU 3456',
+        passenger: 'Козлов К.К.',
+        amount: 150,
+        validUntil: '16.04.2026 23:59',
+        status: 'redeemed',
+        redeemed: true
+    }
+};
+
+// Start scanning (simulated)
+function startScanning() {
+    showToast('Камера активирована. Наведите на QR-код...');
+    
+    // Simulate scanning after 2 seconds
+    setTimeout(() => {
+        const codes = Object.keys(vouchersDB);
+        const randomCode = codes[Math.floor(Math.random() * codes.length)];
+        checkVoucherCode(randomCode);
+    }, 2000);
+}
+
+// Show manual input
+function showManualInput() {
+    document.getElementById('scanner').style.display = 'none';
+    document.getElementById('manualInput').style.display = 'block';
+    document.getElementById('voucherCode').focus();
+}
+
+// Hide manual input
+function hideManualInput() {
+    document.getElementById('scanner').style.display = 'block';
+    document.getElementById('manualInput').style.display = 'none';
+}
+
+// Check voucher from manual input
+function checkVoucher() {
+    const code = document.getElementById('voucherCode').value.trim();
+    if (!code) {
+        showToast('Введите код ваучера');
+        return;
+    }
+    checkVoucherCode(code);
+}
+
+// Check voucher code
+function checkVoucherCode(code) {
+    const voucher = vouchersDB[code];
+    
+    if (!voucher) {
+        showResult('invalid', {
+            type: 'Неизвестный ваучер',
+            flight: '-',
+            passenger: '-',
+            amount: '-',
+            valid: '-',
+            message: 'Ваучер не найден в системе'
+        });
+        return;
+    }
+    
+    currentVoucher = { ...voucher, code };
+    
+    if (voucher.status === 'redeemed') {
+        showResult('invalid', {
+            type: voucher.type,
+            flight: voucher.flight,
+            passenger: voucher.passenger,
+            amount: voucher.amount + ' ₽',
+            valid: voucher.validUntil,
+            message: 'Ваучер уже был использован'
+        });
+    } else if (voucher.status === 'expired') {
+        showResult('expired', {
+            type: voucher.type,
+            flight: voucher.flight,
+            passenger: voucher.passenger,
+            amount: voucher.amount + ' ₽',
+            valid: voucher.validUntil,
+            message: 'Срок действия ваучера истёк'
+        });
+    } else {
+        showResult('valid', {
+            type: voucher.type,
+            flight: voucher.flight,
+            passenger: voucher.passenger,
+            amount: voucher.amount + ' ₽',
+            valid: voucher.validUntil,
+            message: ''
+        });
+    }
+}
+
+// Show result
+function showResult(status, data) {
+    document.getElementById('scanner').style.display = 'none';
+    document.getElementById('manualInput').style.display = 'none';
+    document.getElementById('resultDisplay').style.display = 'block';
+    
+    const display = document.getElementById('resultDisplay');
+    display.className = 'result-display ' + status;
+    
+    if (status === 'valid') {
+        document.getElementById('resultIcon').textContent = '✅';
+        document.getElementById('resultTitle').textContent = 'Действителен';
+        document.getElementById('resultTitle').className = 'result-title valid';
+        document.getElementById('resultActions').innerHTML = `
+            <button class="btn btn-success" onclick="redeemVoucher()">✓ Погасить и выдать</button>
+            <button class="btn btn-secondary" onclick="resetScanner()">Отмена</button>
+        `;
+    } else if (status === 'invalid') {
+        document.getElementById('resultIcon').textContent = '❌';
+        document.getElementById('resultTitle').textContent = 'Недействителен';
+        document.getElementById('resultTitle').className = 'result-title invalid';
+        document.getElementById('resultActions').innerHTML = `
+            <button class="btn btn-secondary" onclick="resetScanner()">OK</button>
+        `;
+    } else if (status === 'expired') {
+        document.getElementById('resultIcon').textContent = '⚠️';
+        document.getElementById('resultTitle').textContent = 'Просрочен';
+        document.getElementById('resultTitle').className = 'result-title expired';
+        document.getElementById('resultActions').innerHTML = `
+            <button class="btn btn-secondary" onclick="resetScanner()">OK</button>
+        `;
+    }
+    
+    document.getElementById('infoType').textContent = data.type;
+    document.getElementById('infoFlight').textContent = data.flight;
+    document.getElementById('infoPassenger').textContent = data.passenger;
+    document.getElementById('infoAmount').textContent = data.amount;
+    document.getElementById('infoValid').textContent = data.valid;
+    
+    if (data.message) {
+        const msgRow = document.createElement('div');
+        msgRow.className = 'info-row';
+        msgRow.innerHTML = `
+            <span class="info-label" style="color: var(--error);">Внимание</span>
+            <span class="info-value" style="color: var(--error);">${data.message}</span>
+        `;
+        document.getElementById('resultInfo').appendChild(msgRow);
+    }
+}
+
+// Redeem voucher
+function redeemVoucher() {
+    if (!currentVoucher) return;
+    
+    if (confirm(`Погасить ваучер на сумму ${currentVoucher.amount} ₽?\nРейс: ${currentVoucher.flight}\nПассажир: ${currentVoucher.passenger}`)) {
+        vouchersDB[currentVoucher.code].redeemed = true;
+        vouchersDB[currentVoucher.code].status = 'redeemed';
+        
+        showToast('✓ Ваучер погашен. Выдайте продукт пассажиру.');
+        
+        // Update stats
+        const statToday = document.getElementById('statToday');
+        statToday.textContent = parseInt(statToday.textContent) + 1;
+        
+        setTimeout(() => {
+            resetScanner();
+        }, 2000);
+    }
+}
+
+// Reset scanner
+function resetScanner() {
+    currentVoucher = null;
+    document.getElementById('scanner').style.display = 'block';
+    document.getElementById('manualInput').style.display = 'none';
+    document.getElementById('resultDisplay').style.display = 'none';
+    document.getElementById('voucherCode').value = '';
+    document.getElementById('resultInfo').innerHTML = `
+        <div class="info-row">
+            <span class="info-label">Тип ваучера</span>
+            <span class="info-value" id="infoType">Горячее питание</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Номер рейса</span>
+            <span class="info-value" id="infoFlight">SU 1234</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Пассажир</span>
+            <span class="info-value" id="infoPassenger">Иванов И.И.</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Сумма</span>
+            <span class="info-value" id="infoAmount">500 ₽</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Действителен до</span>
+            <span class="info-value" id="infoValid">16.04.2026 23:59</span>
+        </div>
+    `;
+}
+
+// Show toast
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// Enter key on manual input
+document.getElementById('voucherCode').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        checkVoucher();
+    }
+});
+</script>
+</body>
+</html>
