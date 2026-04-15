@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Arbat 38</title>
+<style>
+/* ===== RESET ===== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:'TildaSans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0a0a;color:#fff;overflow:hidden;height:100dvh;display:flex;justify-content:center}
+a{color:inherit;text-decoration:none}
+button{border:none;background:none;color:inherit;font:inherit;cursor:pointer}
+input{border:none;background:none;color:inherit;font:inherit;outline:none}
+::-webkit-scrollbar{display:none}
+
+/* ===== VARS ===== */
+:root{
+  --bg:#0a0a0a;--bg2:#141414;--bg3:#1c1c1c;--bg4:#222;
+  --gold:#aa9570;--gold-light:#c4ad8a;--gold-dim:rgba(170,149,112,0.15);
+  --gold-border:rgba(170,149,112,0.25);
+  --white:#fff;--text2:#999;--text3:#555;
+  --radius:14px;--radius-sm:10px;
+  --tab-h:64px;
+}
+
+/* ===== APP ===== */
+#app{width:100%;max-width:430px;height:100dvh;background:var(--bg);position:relative;overflow:hidden}
+
+/* ===== SPLASH ===== */
+#splash{position:absolute;inset:0;z-index:100;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s,visibility .6s}
+#splash.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.splash-logo{width:140px;height:140px;border-radius:50%;background:#111;display:flex;align-items:center;justify-content:center;border:1px solid var(--gold-border);margin-bottom:20px}
+.splash-text{color:var(--gold);font-size:12px;letter-spacing:4px;text-transform:uppercase;font-weight:300}
+
+/* ===== SCREENS ===== */
+.screen{position:absolute;top:env(safe-area-inset-top);left:0;right:0;bottom:calc(var(--tab-h) + env(safe-area-inset-bottom));overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;opacity:0;visibility:hidden;transition:opacity .3s;padding-bottom:80px}
+.screen.active{opacity:1;visibility:visible}
+
+/* ===== TAB BAR ===== */
+#tab-bar{position:absolute;bottom:0;left:0;right:0;height:calc(var(--tab-h) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:var(--bg);border-top:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-around;z-index:50}
+.tab-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;border-radius:16px;transition:all .2s;min-width:52px}
+.tab-btn.active{background:rgba(170,149,112,0.12)}
+.tab-btn svg{width:22px;height:22px}
+.tab-btn span{font-size:9px;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);font-weight:500}
+.tab-btn.active span{color:var(--gold)}
+.tab-btn svg path,.tab-btn svg circle,.tab-btn svg rect,.tab-btn svg line{stroke:var(--text3);transition:stroke .2s}
+.tab-btn.active svg path,.tab-btn.active svg circle,.tab-btn.active svg rect,.tab-btn.active svg line{stroke:var(--gold)}
+
+/* ===== COMMON ===== */
+.section-title{font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--gold);padding:0 20px;margin-bottom:16px}
+.divider{height:1px;background:var(--gold-border);margin:0 20px}
+
+/* ===== CAROUSEL ===== */
+.carousel{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 20px 4px;margin-bottom:32px}
+
+/* ===== HOME ===== */
+.home-header{display:flex;align-items:center;justify-content:space-between;padding:24px 20px 20px}
+.home-greeting{font-size:13px;color:var(--text2);font-weight:300;letter-spacing:1px}
+.home-name{font-size:28px;font-weight:300;letter-spacing:1px;margin-top:2px}
+.bell-btn svg{width:22px;height:22px}
+
+.bonus-card{margin:0 20px 20px;padding:24px;border-radius:var(--radius);background:linear-gradient(135deg,#1a1610 0%,#2a2218 50%,#1a1610 100%);border:1px solid var(--gold-border);position:relative;overflow:hidden}
+.bonus-card .watermark{position:absolute;right:-20px;bottom:-20px;font-size:120px;font-weight:800;color:rgba(170,149,112,0.06);font-family:Georgia,serif;pointer-events:none}
+.bonus-card .label{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px}
+.bonus-card .points{font-size:44px;font-weight:200;letter-spacing:-1px;color:var(--gold-light)}
+.bonus-card .level{margin-top:12px;font-size:12px;font-weight:400;color:var(--gold);letter-spacing:1px}
+.bonus-card .rates{font-size:11px;color:var(--text3);margin-top:4px;letter-spacing:.5px}
+
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px;margin-bottom:32px}
+.stat-card{background:var(--bg2);border:1px solid #1e1e1e;border-radius:var(--radius-sm);padding:18px 16px;cursor:pointer;transition:border-color .2s}
+.stat-card:active{border-color:var(--gold-border)}
+.stat-card .stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:2px}
+.stat-card .stat-value{font-size:28px;font-weight:200;color:var(--gold-light);margin-top:6px}
+
+/* Projects */
+.project-card{flex:0 0 75%;scroll-snap-align:start;border-radius:var(--radius);overflow:hidden;position:relative;height:220px;display:flex;align-items:flex-end;cursor:pointer}
+.project-card .proj-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center}
+.project-card .proj-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.88) 0%,rgba(0,0,0,.3) 40%,rgba(0,0,0,.05) 100%);z-index:1}
+.project-card .proj-info{position:relative;z-index:2;padding:18px;width:100%}
+.project-card .proj-name{font-size:18px;font-weight:400;letter-spacing:2px;text-transform:uppercase}
+.project-card .proj-type{font-size:10px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-top:4px}
+.project-card .proj-line{width:32px;height:1px;background:var(--gold);margin-top:8px}
+
+/* Promos */
+.promo-card{flex:0 0 82%;scroll-snap-align:start;border-radius:var(--radius);overflow:hidden;position:relative;min-height:160px;display:flex;flex-direction:column;justify-content:flex-end;padding:20px;border:1px solid #1e1e1e}
+.promo-card .promo-bg{position:absolute;inset:0;z-index:0}
+.promo-card .promo-content{position:relative;z-index:1}
+.promo-card .promo-brand{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.promo-card .promo-title{font-size:15px;font-weight:400;line-height:1.35;letter-spacing:.5px}
+.promo-card .promo-sub{font-size:11px;color:var(--text2);margin-top:6px}
+
+/* ===== EVENTS ===== */
+.events-header{padding:24px 20px 16px}
+.events-header h1{font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--gold)}
+.pill-tabs{display:flex;gap:8px;padding:0 20px 20px}
+.pill-tab{padding:8px 18px;border-radius:50px;border:1px solid #2a2a2a;font-size:11px;font-weight:400;color:var(--text3);transition:all .2s;letter-spacing:1px;text-transform:uppercase}
+.pill-tab.active{border-color:var(--gold);color:var(--gold)}
+.event-feed{padding:0 20px;display:flex;flex-direction:column;gap:12px}
+.event-card{border-radius:var(--radius);overflow:hidden;position:relative;min-height:150px;display:flex;flex-direction:column;justify-content:flex-end;padding:20px;border:1px solid #1e1e1e}
+.event-card .event-bg{position:absolute;inset:0;z-index:0}
+.event-card .event-content{position:relative;z-index:1}
+.event-card .event-brand{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.event-card .event-title{font-size:16px;font-weight:400;line-height:1.3;letter-spacing:.5px}
+.event-card .event-sub{font-size:11px;margin-top:6px;color:var(--text2)}
+
+/* ===== RESTAURANTS ===== */
+.rest-header{padding:24px 20px 12px}
+.rest-header h1{font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--gold)}
+.search-bar{margin:0 20px 20px;background:var(--bg2);border:1px solid #1e1e1e;border-radius:var(--radius-sm);padding:12px 16px;display:flex;align-items:center;gap:10px}
+.search-bar svg{width:16px;height:16px;flex-shrink:0}
+.search-bar input{flex:1;font-size:13px;color:var(--text2);letter-spacing:.5px}
+.search-bar input::placeholder{color:var(--text3)}
+
+.airport-group{margin-bottom:2px}
+.airport-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;cursor:pointer;transition:background .2s}
+.airport-header:active{background:var(--bg2)}
+.airport-icon{font-size:16px;margin-right:10px;display:flex;align-items:center;flex-shrink:0}
+.airport-name{font-size:13px;font-weight:400;flex:1;letter-spacing:.5px}
+.airport-count{font-size:10px;color:var(--gold);background:var(--gold-dim);padding:3px 10px;border-radius:10px;margin-right:10px;letter-spacing:1px}
+.chevron{transition:transform .3s;color:var(--text3);font-size:12px}
+.airport-group.expanded .chevron{transform:rotate(180deg)}
+.airport-list{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.airport-group.expanded .airport-list{max-height:2000px}
+
+.rest-item{display:flex;align-items:center;padding:14px 20px 14px 50px;border-bottom:1px solid #151515;cursor:pointer;transition:background .15s}
+.rest-item:active{background:var(--bg2)}
+.rest-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;margin-right:12px;flex-shrink:0;border:1px solid var(--gold-border);color:var(--gold);overflow:hidden}
+.rest-icon img{width:100%;height:100%;object-fit:cover}
+.rest-info{flex:1}
+.rest-name{font-size:13px;font-weight:400;letter-spacing:.5px}
+.rest-type{font-size:11px;color:var(--text3);margin-top:2px}
+.coming-soon{font-size:9px;color:var(--gold);background:var(--gold-dim);padding:3px 8px;border-radius:6px;letter-spacing:1px;text-transform:uppercase}
+.rest-arrow{color:var(--text3);margin-left:8px}
+
+/* ===== MODAL ===== */
+.modal-wrap{position:fixed;top:0;left:0;right:0;bottom:0;z-index:80;display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:opacity .3s}
+.modal-wrap.open{opacity:1;visibility:visible}
+.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.7)}
+.modal-sheet{position:relative;z-index:1;width:100%;max-width:430px;max-height:85vh;background:var(--bg);border-radius:20px 20px 0 0;overflow-y:auto;transform:translateY(100%);transition:transform .35s ease;border-top:1px solid var(--gold-border)}
+.modal-wrap.open .modal-sheet{transform:translateY(0)}
+.modal-head{position:sticky;top:0;background:var(--bg);padding:20px;border-bottom:1px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between;z-index:2}
+.modal-head h2{font-size:14px;font-weight:400;letter-spacing:2px;text-transform:uppercase}
+.modal-close{width:32px;height:32px;border-radius:50%;border:1px solid #2a2a2a;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text3);cursor:pointer}
+.modal-body{padding:16px 20px 40px}
+
+/* Menu Items */
+.menu-cat{margin-bottom:28px}
+.menu-cat-title{font-size:11px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.menu-item{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid #151515;gap:12px}
+.menu-item-img{width:64px;height:64px;border-radius:10px;flex-shrink:0;overflow:hidden}
+.menu-item-img img{width:100%;height:100%;object-fit:cover}
+.menu-item-img div{width:100%;height:100%}
+.menu-item-info{flex:1}
+.menu-item-name{font-size:13px;font-weight:400;letter-spacing:.3px}
+.menu-item-desc{font-size:11px;color:var(--text3);margin-top:3px}
+.menu-item-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.menu-item-price{font-size:13px;color:var(--gold);font-weight:400;white-space:nowrap}
+.fav-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;transition:background .2s}
+.fav-btn:active{background:var(--gold-dim)}
+.fav-btn svg{width:16px;height:16px}
+.fav-btn.liked svg path{fill:var(--gold);stroke:var(--gold)}
+
+/* ===== ADDRESSES ===== */
+.addr-header{padding:24px 20px 12px}
+.addr-header h1{font-size:13px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:var(--gold)}
+.toggle-bar{display:flex;margin:0 20px 20px;background:var(--bg2);border:1px solid #1e1e1e;border-radius:var(--radius-sm);padding:3px}
+.toggle-btn{flex:1;padding:10px;text-align:center;font-size:11px;font-weight:400;letter-spacing:1.5px;text-transform:uppercase;border-radius:8px;color:var(--text3);transition:all .25s}
+.toggle-btn.active{background:rgba(170,149,112,0.15);color:var(--gold)}
+.addr-list,.addr-map{display:none}
+.addr-list.active,.addr-map.active{display:block}
+.addr-item{padding:16px 20px;border-bottom:1px solid #151515}
+.addr-name{font-size:13px;font-weight:400;letter-spacing:.5px}
+.addr-detail{font-size:11px;color:var(--text3);margin-top:4px}
+.map-container{margin:0 20px;border-radius:var(--radius);overflow:hidden;background:#0a1220;position:relative;height:360px;border:1px solid #1e1e1e}
+.map-container svg{width:100%;height:100%}
+.map-pin circle{fill:var(--gold)}
+.map-pin text{fill:#000;font-size:10px;font-weight:700;text-anchor:middle;dominant-baseline:central}
+.map-label{fill:var(--text3);font-size:8px;text-anchor:middle}
+.addr-search{margin:16px 20px 0;background:var(--bg2);border:1px solid #1e1e1e;border-radius:var(--radius-sm);padding:14px 16px;display:flex;align-items:center;gap:10px}
+.addr-search svg{width:16px;height:16px;flex-shrink:0}
+.addr-search input{flex:1;font-size:13px}
+.addr-search input::placeholder{color:var(--text3)}
+
+/* ===== PROFILE ===== */
+.prof-header{display:flex;align-items:center;justify-content:space-between;padding:24px 20px 20px}
+.prof-left{display:flex;align-items:center;gap:14px}
+.prof-avatar{width:48px;height:48px;border-radius:50%;border:1px solid var(--gold-border);display:flex;align-items:center;justify-content:center}
+.prof-avatar svg{width:22px;height:22px}
+
+.card-flip-wrap{perspective:1000px;margin:0 20px 20px;cursor:pointer;height:170px}
+.card-flip{position:relative;transition:transform .6s;transform-style:preserve-3d;height:170px}
+.card-flip.flipped{transform:rotateY(180deg)}
+.card-front,.card-back{backface-visibility:hidden;border-radius:var(--radius);position:absolute;top:0;left:0;right:0;height:170px}
+.card-front{z-index:2}
+.card-back{transform:rotateY(180deg);background:#fff;color:#0a0a0a;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;border:1px solid var(--gold-border)}
+.qr-grid{width:110px;height:110px;display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(10,1fr);gap:1px;margin-bottom:10px}
+.qr-cell{border-radius:1px}
+.qr-cell.dark{background:#0a0a0a}
+.qr-cell.light{background:#fff}
+.qr-label{font-size:11px;color:#666;letter-spacing:1px}
+
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px;margin-bottom:24px}
+.stat-box{background:var(--bg2);border:1px solid #1e1e1e;border-radius:var(--radius-sm);padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s}
+.stat-box:active{border-color:var(--gold-border)}
+.stat-box .st-icon{width:34px;height:34px;border-radius:8px;background:var(--gold-dim);display:flex;align-items:center;justify-content:center}
+.stat-box .st-icon svg{width:16px;height:16px}
+.stat-box .st-num{font-size:18px;font-weight:300;color:var(--gold-light)}
+.stat-box .st-lbl{font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase}
+
+/* Certificates */
+.cert-card{flex:0 0 70%;scroll-snap-align:start;border-radius:var(--radius);border:1px solid var(--gold-border);overflow:hidden;padding:20px;background:var(--bg2);display:flex;flex-direction:column;gap:12px}
+.cert-amount{font-size:32px;font-weight:200;color:var(--gold-light)}
+.cert-name{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--text2)}
+.cert-btns{display:flex;gap:8px;margin-top:auto}
+.cert-btn{padding:8px 16px;border-radius:8px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:500;transition:all .2s}
+.cert-btn.buy{background:var(--gold);color:#000}
+.cert-btn.gift{border:1px solid var(--gold-border);color:var(--gold)}
+
+/* Menu List */
+.prof-menu{padding:0 20px}
+.prof-row{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid #151515;cursor:pointer}
+.prof-row:active{opacity:.6}
+.prof-row span{font-size:13px;font-weight:300;letter-spacing:.5px}
+.prof-row .arr{color:var(--text3);font-size:14px}
+
+/* Chat */
+.chat-msgs{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.chat-msg{max-width:80%;padding:12px 16px;border-radius:14px;font-size:13px;line-height:1.45;font-weight:300}
+.chat-msg.bot{background:var(--bg2);align-self:flex-start;border-bottom-left-radius:4px;border:1px solid #1e1e1e}
+.chat-msg.user{background:rgba(170,149,112,0.15);align-self:flex-end;border-bottom-right-radius:4px;border:1px solid var(--gold-border);color:var(--gold-light)}
+.chat-bar{padding:12px 20px;border-top:1px solid #1a1a1a;display:flex;gap:10px}
+.chat-bar input{flex:1;background:var(--bg2);padding:12px 16px;border-radius:24px;font-size:13px;color:#fff;border:1px solid #1e1e1e}
+.chat-bar input::placeholder{color:var(--text3)}
+.chat-send{width:42px;height:42px;border-radius:50%;background:rgba(170,149,112,0.2);display:flex;align-items:center;justify-content:center;border:1px solid var(--gold-border)}
+.chat-send svg{width:18px;height:18px}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- SPLASH -->
+  <div id="splash">
+    <div class="splash-logo">
+      <svg width="90" height="90" viewBox="0 0 100 100">
+        <text x="10" y="40" font-size="18" fill="#aa9570" font-weight="600" font-family="Georgia,serif" letter-spacing="1">ARBAT</text>
+        <text x="48" y="72" font-size="38" fill="#aa9570" font-weight="700" font-family="Georgia,serif">38</text>
+        <text x="6" y="90" font-size="7" fill="#aa9570" letter-spacing="1.2" font-family="sans-serif" font-weight="300">GROUP OF COMPANIES</text>
+      </svg>
+    </div>
+    <div class="splash-text">Arbat 38</div>
+  </div>
+
+  <div id="screen-home" class="screen"></div>
+  <div id="screen-events" class="screen"></div>
+  <div id="screen-restaurants" class="screen"></div>
+  <div id="screen-addresses" class="screen"></div>
+  <div id="screen-profile" class="screen"></div>
+
+  <!-- TAB BAR -->
+  <div id="tab-bar">
+    <button class="tab-btn active" data-action="navigate" data-tab="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2">
+        <circle cx="12" cy="12" r="10"/>
+        <text x="12" y="15" text-anchor="middle" font-size="8" font-weight="700" fill="currentColor" stroke="none" font-family="Georgia,serif">38</text>
+      </svg>
+      <span>Arbat</span>
+    </button>
+    <button class="tab-btn" data-action="navigate" data-tab="events">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>События</span>
+    </button>
+    <button class="tab-btn" data-action="navigate" data-tab="restaurants">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
+      <span>Меню</span>
+    </button>
+    <button class="tab-btn" data-action="navigate" data-tab="addresses">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+      <span>Адреса</span>
+    </button>
+    <button class="tab-btn" data-action="navigate" data-tab="profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2"><circle cx="12" cy="8" r="4"/><path d="M20 21c0-4.42-3.58-8-8-8s-8 3.58-8 8"/></svg>
+      <span>Кабинет</span>
+    </button>
+  </div>
+
+  <!-- REST MODAL -->
+  <div id="rest-modal" class="modal-wrap">
+    <div class="modal-overlay" data-action="close-modal"></div>
+    <div class="modal-sheet">
+      <div class="modal-head"><h2 id="modal-title"></h2><div class="modal-close" data-action="close-modal">&times;</div></div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- CHAT MODAL -->
+  <div id="chat-modal" class="modal-wrap">
+    <div class="modal-overlay" data-action="close-chat"></div>
+    <div class="modal-sheet" style="height:70vh;display:flex;flex-direction:column">
+      <div class="modal-head"><h2>Консультант</h2><div class="modal-close" data-action="close-chat">&times;</div></div>
+      <div class="chat-msgs" id="chat-msgs"><div class="chat-msg bot">Добро пожаловать в Arbat 38. Чем могу помочь?</div></div>
+      <div class="chat-bar">
+        <input type="text" id="chat-input" placeholder="Сообщение...">
+        <button class="chat-send" data-action="send-chat"><svg viewBox="0 0 24 24" fill="none" stroke="#aa9570" stroke-width="1.5"><path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CERT MODAL -->
+  <div id="cert-modal" class="modal-wrap">
+    <div class="modal-overlay" data-action="close-cert"></div>
+    <div class="modal-sheet">
+      <div class="modal-head"><h2 id="cert-title">Сертификат</h2><div class="modal-close" data-action="close-cert">&times;</div></div>
+      <div class="modal-body" id="cert-body"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const USER = { name:'Михаил', points:3723, level:'Гастросет', accrual:'7%', redemption:'50%', orders:4, favorites:0, gifts:2, promo:null };
+const favorites = new Set();
+
+const BRANDS = [
+  { name:'BLACK STAR BURGER', type:'Бургеры', letter:'BS', bg:'linear-gradient(135deg,#1a1008,#2a1a10)',
+    img:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&h=400&fit=crop' },
+  { name:'THE IRISH BAR', type:'Паб', letter:'IB', bg:'linear-gradient(135deg,#0a1a0a,#1a2a1a)',
+    img:'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=600&h=400&fit=crop' },
+  { name:'BELUGA CAVIAR BAR', type:'Икра и шампанское', letter:'BC', bg:'linear-gradient(135deg,#0a0a1a,#1a1a2a)',
+    img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop' },
+  { name:'VASILCHUKI Chaihona 1', type:'Восточная кухня', letter:'VC', bg:'linear-gradient(135deg,#1a1208,#2a2018)',
+    img:'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&h=400&fit=crop' },
+  { name:'MO!BAR', type:'Бар', letter:'MO', bg:'linear-gradient(135deg,#0a1210,#1a2220)',
+    img:'https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600&h=400&fit=crop' },
+  { name:'ABRAU-DURSO WINE BAR', type:'Винный бар', letter:'AD', bg:'linear-gradient(135deg,#1a0a12,#2a1a22)',
+    img:'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&h=400&fit=crop' },
+  { name:'SIBERIAN TALES', type:'Русская кухня', letter:'ST', bg:'linear-gradient(135deg,#0a0e1a,#1a1e2a)',
+    img:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=400&fit=crop' },
+  { name:'BURGER HEROES', type:'Бургеры', letter:'BH', bg:'linear-gradient(135deg,#1a0e08,#2a1e18)',
+    img:'https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&h=400&fit=crop' },
+  { name:'SMOKING LOUNGE', type:'Лаунж', letter:'SL', bg:'linear-gradient(135deg,#121212,#1e1e1e)',
+    img:'https://images.unsplash.com/photo-1545158535-c3f7168c28b6?w=600&h=400&fit=crop' },
+  { name:'STARS COFFEE', type:'Кофейня', letter:'SC', bg:'linear-gradient(135deg,#0a1208,#1a2218)',
+    img:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=400&fit=crop' },
+  { name:'PRO.ХАЧАПУРИ', type:'Грузинская кухня', letter:'PX', bg:'linear-gradient(135deg,#1a1008,#2a2018)',
+    img:'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&h=400&fit=crop' },
+  { name:'ГОСПОДА УДАЧИ', type:'Ресторан', letter:'ГУ', bg:'linear-gradient(135deg,#1a1210,#2a2220)',
+    img:'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&h=400&fit=crop' },
+  { name:'SMOKE ROOM', type:'Лаунж', letter:'SR', bg:'linear-gradient(135deg,#0e0e0e,#1a1a1a)',
+    img:'https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=600&h=400&fit=crop' },
+  { name:'SMOKE BAR', type:'Бар', letter:'SB', bg:'linear-gradient(135deg,#10100e,#1e1e1a)',
+    img:'https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=600&h=400&fit=crop' },
+  { name:'VIP SMOKING LOUNGE', type:'VIP Лаунж', letter:'VS', bg:'linear-gradient(135deg,#141210,#222018)',
+    img:'https://images.unsplash.com/photo-1560624052-449f5ddf0c31?w=600&h=400&fit=crop' },
+  { name:'Вкусный буфет', type:'Буфет', letter:'ВБ', bg:'linear-gradient(135deg,#1a1610,#2a2620)',
+    img:'https://images.unsplash.com/photo-1567521464027-f127ff144326?w=600&h=400&fit=crop' }
+];
+
+const AIRPORT_LOGOS = {
+  'SVO': `<svg viewBox="0 0 40 40" width="28" height="28"><circle cx="20" cy="20" r="19" fill="none" stroke="#aa9570" stroke-width="1"/><text x="20" y="16" text-anchor="middle" font-size="7" fill="#aa9570" font-weight="600" letter-spacing="1">SVO</text><text x="20" y="28" text-anchor="middle" font-size="16" fill="#aa9570" font-weight="300">✈</text></svg>`,
+  'VKO': `<svg viewBox="0 0 40 40" width="28" height="28"><circle cx="20" cy="20" r="19" fill="none" stroke="#aa9570" stroke-width="1"/><text x="20" y="16" text-anchor="middle" font-size="7" fill="#aa9570" font-weight="600" letter-spacing="1">VKO</text><text x="20" y="28" text-anchor="middle" font-size="16" fill="#aa9570" font-weight="300">✈</text></svg>`,
+  'DME': `<svg viewBox="0 0 40 40" width="28" height="28"><circle cx="20" cy="20" r="19" fill="none" stroke="#aa9570" stroke-width="1"/><text x="20" y="16" text-anchor="middle" font-size="7" fill="#aa9570" font-weight="600" letter-spacing="1">DME</text><text x="20" y="28" text-anchor="middle" font-size="16" fill="#aa9570" font-weight="300">✈</text></svg>`,
+  'MRV': `<svg viewBox="0 0 40 40" width="28" height="28"><circle cx="20" cy="20" r="19" fill="none" stroke="#aa9570" stroke-width="1"/><text x="20" y="16" text-anchor="middle" font-size="7" fill="#aa9570" font-weight="600" letter-spacing="1">MRV</text><text x="20" y="28" text-anchor="middle" font-size="16" fill="#aa9570" font-weight="300">✈</text></svg>`
+};
+
+const AIRPORTS = [
+  { id:'svo-b', name:'Шереметьево', terminal:'Терминал B', icon:'SVO', code:'SVO', address:'Химки, Шереметьево, Терминал B',
+    restaurants:['BLACK STAR BURGER','VASILCHUKI Chaihona 1','VIP SMOKING LOUNGE','SMOKE ROOM','MO!BAR'] },
+  { id:'svo-c', name:'Шереметьево', terminal:'Терминал C', icon:'SVO', code:'SVO', address:'Химки, Шереметьево, Терминал C',
+    restaurants:['THE IRISH BAR','BELUGA CAVIAR BAR','ABRAU-DURSO WINE BAR','MO!BAR','SMOKE ROOM','SIBERIAN TALES'] },
+  { id:'vko-d', name:'Внуково', terminal:'Терминал А (внутренние)', icon:'VKO', code:'VKO', address:'Внуково, Терминал А',
+    restaurants:['VASILCHUKI Chaihona 1','SMOKING LOUNGE','SMOKE BAR','THE IRISH BAR*'] },
+  { id:'vko-i', name:'Внуково', terminal:'Терминал А (международные)', icon:'VKO', code:'VKO', address:'Внуково, Терминал А, межд.',
+    restaurants:['THE IRISH BAR','BURGER HEROES','MO!BAR','SMOKING LOUNGE','SMOKE BAR','SIBERIAN TALES'] },
+  { id:'dme-1', name:'Домодедово', terminal:'Терминал 1', icon:'DME', code:'DME', address:'Домодедово, Терминал 1',
+    restaurants:['BURGER HEROES','MO!BAR','MO!BAR','Вкусный буфет'] },
+  { id:'dme-2', name:'Домодедово', terminal:'Терминал 2 (международные)', icon:'DME', code:'DME', address:'Домодедово, Терминал 2',
+    restaurants:['BURGER HEROES','ABRAU-DURSO WINE BAR','MO!BAR','MO!BAR','MO!BAR','SMOKING LOUNGE*','SMOKE BAR*'] },
+  { id:'mrv', name:'Минеральные воды', terminal:'Аэропорт', icon:'MRV', code:'MRV', address:'Минеральные Воды, Аэропорт',
+    restaurants:['ГОСПОДА УДАЧИ','MO!BAR','VASILCHUKI Chaihona 1','THE IRISH BAR','BLACK STAR BURGER','STARS COFFEE','PRO.ХАЧАПУРИ','SMOKING LOUNGE*'] }
+];
+
+function getBrand(name) {
+  const clean = name.replace('*','');
+  return BRANDS.find(b => b.name === clean) || { name:clean, type:'', letter:clean[0], bg:'linear-gradient(135deg,#111,#1a1a1a)' };
+}
+
+const FOOD_COLORS = ['#3a2a18','#2a1a10','#1a2a18','#2a2018','#1a1a2a','#2a1822','#1a2220','#221a10'];
+const MENUS = {
+  'BLACK STAR BURGER': [
+    { cat:'Бургеры', items:[
+      {name:'Classic Burger',desc:'Говядина, чеддер, салат, томат',price:'690 ₽',img:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&h=200&fit=crop'},
+      {name:'Black Star Burger',desc:'Двойная котлета, бекон, соус BBQ',price:'890 ₽',img:'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=200&h=200&fit=crop'},
+      {name:'Chicken Burger',desc:'Куриная котлета, айоли, руккола',price:'590 ₽',img:'https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=200&h=200&fit=crop'}
+    ]},
+    { cat:'Закуски', items:[
+      {name:'Картофель фри',desc:'С трюфельным маслом',price:'390 ₽',img:'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=200&h=200&fit=crop'},
+      {name:'Наггетсы',desc:'Куриные наггетсы, 8 шт',price:'490 ₽',img:'https://images.unsplash.com/photo-1562967914-608f82629710?w=200&h=200&fit=crop'}
+    ]},
+    { cat:'Напитки', items:[
+      {name:'Лимонад',desc:'Домашний, 0.4л',price:'290 ₽',img:'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=200&h=200&fit=crop'},
+      {name:'Молочный шейк',desc:'Ваниль / шоколад / клубника',price:'390 ₽',img:'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=200&h=200&fit=crop'}
+    ]}
+  ],
+  'THE IRISH BAR': [
+    { cat:'Основные блюда', items:[
+      {name:'Fish & Chips',desc:'Треска в кляре, картофель, соус тартар',price:'790 ₽',img:'https://images.unsplash.com/photo-1579208030886-b1f5b7e9b4fe?w=200&h=200&fit=crop'},
+      {name:'Стейк рибай',desc:'Мраморная говядина, 300г',price:'1890 ₽',img:'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=200&h=200&fit=crop'},
+      {name:'Shepherd\'s Pie',desc:'Мясная запеканка с пюре',price:'690 ₽',img:'https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=200&h=200&fit=crop'}
+    ]},
+    { cat:'Пиво', items:[
+      {name:'Guinness',desc:'Разливное, 0.5л',price:'590 ₽',img:'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=200&h=200&fit=crop'},
+      {name:'Kilkenny',desc:'Красный эль, 0.5л',price:'550 ₽',img:'https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=200&h=200&fit=crop'}
+    ]}
+  ],
+  'BELUGA CAVIAR BAR': [
+    { cat:'Икра', items:[
+      {name:'Белуга 50г',desc:'Чёрная икра белуги, блины',price:'8900 ₽',img:'https://images.unsplash.com/photo-1632778149955-e80f8ceca2e8?w=200&h=200&fit=crop'},
+      {name:'Осётр 30г',desc:'Осетровая икра, тосты',price:'3900 ₽',img:'https://images.unsplash.com/photo-1590759668628-05b0fc34bb70?w=200&h=200&fit=crop'}
+    ]},
+    { cat:'Шампанское', items:[
+      {name:'Dom Pérignon',desc:'Винтаж 2013',price:'24 900 ₽',img:'https://images.unsplash.com/photo-1547595628-c61a29f496f0?w=200&h=200&fit=crop'},
+      {name:'Moёt & Chandon',desc:'Brut Imperial',price:'7900 ₽',img:'https://images.unsplash.com/photo-1594372365401-3b5ff14eaaed?w=200&h=200&fit=crop'}
+    ]}
+  ],
+  'VASILCHUKI Chaihona 1': [
+    { cat:'Восточная кухня', items:[
+      {name:'Плов узбекский',desc:'Баранина, рис, нут, морковь',price:'790 ₽',img:'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=200&h=200&fit=crop'},
+      {name:'Шашлык из баранины',desc:'Каре ягнёнка, 350г',price:'1290 ₽',img:'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&h=200&fit=crop'},
+      {name:'Хумус',desc:'С оливковым маслом и паприкой',price:'390 ₽',img:'https://images.unsplash.com/photo-1577805947697-89e18249d767?w=200&h=200&fit=crop'}
+    ]},
+    { cat:'Чай', items:[
+      {name:'Чайник зелёного чая',desc:'Жасмин, 600мл',price:'490 ₽',img:'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=200&h=200&fit=crop'},
+      {name:'Облепиховый чай',desc:'С мёдом и имбирём, 600мл',price:'550 ₽',img:'https://images.unsplash.com/photo-1597318181409-cf64d0b5d8a2?w=200&h=200&fit=crop'}
+    ]}
+  ],
+  'MO!BAR': [
+    { cat:'Коктейли', items:[
+      {name:'MO! Signature',desc:'Водка, личи, розмарин, лайм',price:'690 ₽',img:'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=200&h=200&fit=crop'},
+      {name:'Espresso Martini',desc:'Водка, кофейный ликёр, эспрессо',price:'650 ₽',img:'https://images.unsplash.com/photo-1583898350903-99fa829dad3d?w=200&h=200&fit=crop'},
+      {name:'Mojito',desc:'Ром, лайм, мята, содовая',price:'590 ₽',img:'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=200&h=200&fit=crop'}
+    ]},
+    { cat:'Закуски', items:[
+      {name:'Начос с гуакамоле',desc:'Кукурузные чипсы, авокадо',price:'490 ₽',img:'https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=200&h=200&fit=crop'},
+      {name:'Брускетта',desc:'С томатами и базиликом',price:'390 ₽',img:'https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=200&h=200&fit=crop'}
+    ]}
+  ],
+  'ABRAU-DURSO WINE BAR': [
+    { cat:'Вино', items:[
+      {name:'Abrau Brut',desc:'Игристое, Краснодарский край',price:'590 ₽',img:'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=200&h=200&fit=crop'},
+      {name:'Pinot Noir Reserve',desc:'Абрау-Дюрсо, красное сухое',price:'790 ₽',img:'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=200&h=200&fit=crop'},
+      {name:'Chardonnay',desc:'Абрау-Дюрсо, белое сухое',price:'690 ₽',img:'https://images.unsplash.com/photo-1474722883778-792e7990302f?w=200&h=200&fit=crop'}
+    ]},
+    { cat:'Сырная тарелка', items:[
+      {name:'Ассорти европейское',desc:'Бри, камамбер, пармезан, горгонзола',price:'1290 ₽',img:'https://images.unsplash.com/photo-1452195100486-9cc805987862?w=200&h=200&fit=crop'},
+      {name:'Оливки и орехи',desc:'Микс оливок, миндаль, кешью',price:'490 ₽',img:'https://images.unsplash.com/photo-1593001874117-c99c800e3eb7?w=200&h=200&fit=crop'}
+    ]}
+  ],
+  'SIBERIAN TALES': [
+    { cat:'Русская кухня', items:[
+      {name:'Пельмени сибирские',desc:'Говядина и свинина, сметана',price:'590 ₽',img:'https://images.unsplash.com/photo-1587389225591-80e7eb8e68ac?w=200&h=200&fit=crop'},
+      {name:'Борщ',desc:'С говядиной и сметаной',price:'490 ₽',img:'https://images.unsplash.com/photo-1603105037880-880cd4f9b9d3?w=200&h=200&fit=crop'},
+      {name:'Блины с красной икрой',desc:'Тонкие блины, икра, масло',price:'890 ₽',img:'https://images.unsplash.com/photo-1590301157890-4810ed352733?w=200&h=200&fit=crop'}
+    ]},
+    { cat:'Напитки', items:[
+      {name:'Морс клюквенный',desc:'Домашний, 0.4л',price:'290 ₽',img:'https://images.unsplash.com/photo-1563227812-0ea4c22e6cc8?w=200&h=200&fit=crop'},
+      {name:'Сбитень',desc:'С мёдом и пряностями',price:'350 ₽',img:'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=200&h=200&fit=crop'}
+    ]}
+  ],
+  'BURGER HEROES': [
+    { cat:'Бургеры', items:[
+      {name:'Hero Burger',desc:'Ангус, бекон, чеддер, халапеньо',price:'790 ₽',img:'https://images.unsplash.com/photo-1550547660-d9450f859349?w=200&h=200&fit=crop'},
+      {name:'Veggie Hero',desc:'Котлета из нута, авокадо, руккола',price:'590 ₽',img:'https://images.unsplash.com/photo-1520072959219-c595e6cdc07a?w=200&h=200&fit=crop'},
+      {name:'Double Smash',desc:'Двойная смэш-котлета, сыр',price:'890 ₽',img:'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=200&h=200&fit=crop'}
+    ]},
+    { cat:'Гарниры', items:[
+      {name:'Сладкий картофель',desc:'Батат фри с соусом',price:'390 ₽',img:'https://images.unsplash.com/photo-1529589510304-b7e994a92f60?w=200&h=200&fit=crop'},
+      {name:'Луковые кольца',desc:'В хрустящей панировке',price:'350 ₽',img:'https://images.unsplash.com/photo-1639024471283-03518883512d?w=200&h=200&fit=crop'}
+    ]}
+  ],
+  'STARS COFFEE': [
+    { cat:'Кофе', items:[
+      {name:'Капучино',desc:'Арабика, молоко, 300мл',price:'350 ₽',img:'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=200&h=200&fit=crop'},
+      {name:'Флэт уайт',desc:'Двойной эспрессо, молоко',price:'390 ₽',img:'https://images.unsplash.com/photo-1611564494260-6f21b80af7ea?w=200&h=200&fit=crop'},
+      {name:'Раф',desc:'Сливки, ванильный сахар',price:'420 ₽',img:'https://images.unsplash.com/photo-1534778101976-62847782c213?w=200&h=200&fit=crop'}
+    ]},
+    { cat:'Выпечка', items:[
+      {name:'Круассан',desc:'Классический, сливочное масло',price:'290 ₽',img:'https://images.unsplash.com/photo-1555507036-ab1f4038024a?w=200&h=200&fit=crop'},
+      {name:'Чизкейк',desc:'Нью-Йорк, ягодный соус',price:'450 ₽',img:'https://images.unsplash.com/photo-1524351199678-941a58a3df50?w=200&h=200&fit=crop'}
+    ]}
+  ],
+  'PRO.ХАЧАПУРИ': [
+    { cat:'Хачапури', items:[
+      {name:'По-аджарски',desc:'Лодочка, сулугуни, яйцо, масло',price:'590 ₽',img:'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&h=200&fit=crop'},
+      {name:'По-мегрельски',desc:'Двойной сыр, сулугуни',price:'490 ₽',img:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=200&h=200&fit=crop'},
+      {name:'По-имеретински',desc:'Классическое, имеретинский сыр',price:'450 ₽',img:'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=200&h=200&fit=crop'}
+    ]},
+    { cat:'Хинкали', items:[
+      {name:'С бараниной',desc:'5 штук, мясной бульон',price:'490 ₽',img:'https://images.unsplash.com/photo-1625944525533-473f1a3d54e7?w=200&h=200&fit=crop'},
+      {name:'С сыром',desc:'5 штук, сулугуни и мята',price:'390 ₽',img:'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=200&h=200&fit=crop'}
+    ]}
+  ],
+  'ГОСПОДА УДАЧИ': [
+    { cat:'Горячее', items:[
+      {name:'Каре ягнёнка',desc:'С розмарином и чесноком, 400г',price:'1690 ₽',img:'https://images.unsplash.com/photo-1544025162-d76694265947?w=200&h=200&fit=crop'},
+      {name:'Форель на гриле',desc:'Целая, с лимоном и травами',price:'1290 ₽',img:'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=200&h=200&fit=crop'},
+      {name:'Шашлык ассорти',desc:'Свинина, курица, овощи',price:'990 ₽',img:'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&h=200&fit=crop'}
+    ]},
+    { cat:'Напитки', items:[
+      {name:'Домашнее вино',desc:'Красное, 0.5л',price:'690 ₽',img:'https://images.unsplash.com/photo-1474722883778-792e7990302f?w=200&h=200&fit=crop'},
+      {name:'Лимонад тархун',desc:'Домашний, 0.4л',price:'290 ₽',img:'https://images.unsplash.com/photo-1556881286-fc6915169721?w=200&h=200&fit=crop'}
+    ]}
+  ],
+  '_default': [
+    { cat:'Завтраки', items:[
+      {name:'Яичница с беконом',desc:'Два яйца, бекон, тосты',price:'490 ₽',img:'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=200&h=200&fit=crop'},
+      {name:'Омлет с сыром',desc:'Три яйца, пармезан, зелень',price:'420 ₽',img:'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=200&h=200&fit=crop'},
+      {name:'Сырники',desc:'Со сметаной и ягодами',price:'380 ₽',img:'https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=200&h=200&fit=crop'}
+    ]},
+    { cat:'Салаты', items:[
+      {name:'Цезарь с курицей',desc:'Романо, пармезан, соус цезарь',price:'590 ₽',img:'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=200&h=200&fit=crop'},
+      {name:'Греческий',desc:'Томаты, огурцы, фета, оливки',price:'490 ₽',img:'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=200&h=200&fit=crop'}
+    ]},
+    { cat:'Основные блюда', items:[
+      {name:'Стейк рибай 300г',desc:'Мраморная говядина, гриль',price:'2 490 ₽',img:'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=200&h=200&fit=crop'},
+      {name:'Паста карбонара',desc:'Гуанчале, пармезан, желток',price:'590 ₽',img:'https://images.unsplash.com/photo-1612874742237-6526221588e3?w=200&h=200&fit=crop'},
+      {name:'Лосось на гриле',desc:'Филе лосося, овощи гриль',price:'1 290 ₽',img:'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=200&h=200&fit=crop'}
+    ]},
+    { cat:'Напитки', items:[
+      {name:'Капучино',desc:'Арабика, молоко',price:'290 ₽',img:'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=200&h=200&fit=crop'},
+      {name:'Свежевыжатый сок',desc:'Апельсин / яблоко / морковь',price:'390 ₽',img:'https://images.unsplash.com/photo-1622597467836-f3285f2131b8?w=200&h=200&fit=crop'},
+      {name:'Пиво 0.5л',desc:'Разливное, светлое',price:'490 ₽',img:'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=200&h=200&fit=crop'}
+    ]}
+  ]
+};
+
+const PROMOS = [
+  {title:'КЕШБЭК 20% НА САМОВЫВОЗ',sub:'Во всех ресторанах холдинга при заказе через приложение',brand:'ARBAT 38',
+    bg:'linear-gradient(135deg,#1a1610,#2a2618)',img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=300&fit=crop'},
+  {title:'HAPPY HOURS 17:00–19:00',sub:'Скидка 30% на все коктейли в MO!BAR',brand:'ARBAT 38',
+    bg:'linear-gradient(135deg,#0a1210,#1a2220)',img:'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&h=300&fit=crop'},
+  {title:'БИЗНЕС-ЛАНЧ ОТ 590 ₽',sub:'Будние дни, 12:00 — 16:00 во всех ресторанах',brand:'ARBAT 38',
+    bg:'linear-gradient(135deg,#0a1a0a,#1a2a1a)',img:'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&h=300&fit=crop'},
+  {title:'ДВОЙНЫЕ БОНУСЫ В ВЫХОДНЫЕ',sub:'x2 баллов при заказе по субботам и воскресеньям',brand:'ARBAT 38',
+    bg:'linear-gradient(135deg,#1a1208,#2a2218)',img:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=300&fit=crop'},
+  {title:'ЗАВТРАКИ ДО 12:00 — 15% OFF',sub:'Специальное предложение на все завтраки в аэропортах',brand:'ARBAT 38',
+    bg:'linear-gradient(135deg,#1a0a12,#2a1a22)',img:'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=600&h=300&fit=crop'},
+  {title:'ДЕГУСТАЦИЯ ВИН АБРАУ-ДЮРСО',sub:'Бесплатная дегустация при заказе от 3000 ₽',brand:'ARBAT 38',
+    bg:'linear-gradient(135deg,#1a0e10,#2a1e20)',img:'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&h=300&fit=crop'}
+];
+
+const EVENTS_DATA = {
+  promotions: PROMOS,
+  news: [
+    {title:'ОТКРЫТИЕ MO!BAR В ДОМОДЕДОВО',sub:'Терминал 2, зона вылета',brand:'MO!BAR',bg:'linear-gradient(135deg,#0a1210,#1a2220)',img:'https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600&h=300&fit=crop'},
+    {title:'ОБНОВЛЁННОЕ МЕНЮ ЗАВТРАКОВ',sub:'Во всех ресторанах THE IRISH BAR',brand:'THE IRISH BAR',bg:'linear-gradient(135deg,#0a1a0a,#1a2a1a)',img:'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=600&h=300&fit=crop'},
+    {title:'НОВЫЕ ПАРТНЁРЫ ЛОЯЛЬНОСТИ',sub:'Аэрофлот Мили и Travel Pass',brand:'ARBAT 38',bg:'linear-gradient(135deg,#1a1610,#2a2618)',img:'https://images.unsplash.com/photo-1436491865332-7a61a109db05?w=600&h=300&fit=crop'}
+  ],
+  events: [
+    {title:'ВИННАЯ ДЕГУСТАЦИЯ',sub:'28 марта, 19:00 — Шереметьево C',brand:'ABRAU-DURSO',bg:'linear-gradient(135deg,#1a0a12,#2a1a22)',img:'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&h=300&fit=crop'},
+    {title:'LIVE MUSIC FRIDAY',sub:'Каждую пятницу, 20:00',brand:'THE IRISH BAR',bg:'linear-gradient(135deg,#0a1a0a,#1a2a1a)',img:'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=600&h=300&fit=crop'},
+    {title:'ГАСТРОНОМИЧЕСКИЙ УЖИН',sub:'5 апреля, 19:30 — Минеральные Воды',brand:'ГОСПОДА УДАЧИ',bg:'linear-gradient(135deg,#1a1210,#2a2220)',img:'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600&h=300&fit=crop'}
+  ]
+};
+
+const CERTS = [
+  {amount:'3 000 ₽',name:'Сертификат Arbat 38'},
+  {amount:'5 000 ₽',name:'Сертификат Arbat 38'},
+  {amount:'10 000 ₽',name:'Премиум сертификат'},
+  {amount:'25 000 ₽',name:'VIP сертификат'}
+];
+
+const AI_RESP = [
+  'Рекомендую стейк рибай в THE IRISH BAR — безупречное качество мраморной говядины.',
+  'В Шереметьево, Терминал C, вас ждёт BELUGA CAVIAR BAR — идеальный выбор перед вылетом.',
+  'Ваш баланс: 3 723 бонуса. С уровнем Гастросет — 7% начисление и 50% списание.',
+  'MO!BAR — наш флагманский бар. Авторские коктейли и быстрое обслуживание.',
+  'Сертификаты Arbat 38 — идеальный подарок. Доступны номиналы от 3 000 до 25 000 ₽.',
+  'Для бронирования столика свяжитесь с нами через чат или по телефону.'
+];
+
+// ===== STATE =====
+const state = { tab:'home', eventsFilter:'promotions', addrView:'list', expanded:new Set(), flipped:false };
+
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h<6) return 'Доброй ночи'; if (h<12) return 'Доброе утро';
+  if (h<18) return 'Добрый день'; return 'Добрый вечер';
+}
+
+const heartSvg = (filled) => `<svg viewBox="0 0 24 24" fill="${filled?'#aa9570':'none'}" stroke="${filled?'#aa9570':'#555'}" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>`;
+
+// ===== RENDERS =====
+function renderHome() {
+  const uniqueBrands = [...new Set(AIRPORTS.flatMap(a=>a.restaurants))].map(r=>r.replace('*','')).filter((v,i,a)=>a.indexOf(v)===i);
+  return `
+    <div class="home-header">
+      <div><div class="home-greeting">${getGreeting()},</div><div class="home-name">${USER.name}</div></div>
+      <button class="bell-btn"><svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></button>
+    </div>
+    <div class="bonus-card"><div class="watermark">38</div>
+      <div class="label">бонусы</div><div class="points">${USER.points.toLocaleString()}</div>
+      <div class="level">${USER.level}</div><div class="rates">${USER.accrual} начисление · ${USER.redemption} списание</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">подарки</div><div class="stat-value">${USER.gifts}</div></div>
+      <div class="stat-card"><div class="stat-label">избранное</div><div class="stat-value">${favorites.size||'—'}</div></div>
+    </div>
+    <div class="section-title">Специальные предложения</div>
+    <div class="carousel">${PROMOS.map(p=>`
+      <div class="promo-card"><div class="promo-bg" style="${p.img?`background-image:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.3) 60%),url('${p.img}');background-size:cover;background-position:center`:`background:${p.bg}`};position:absolute;inset:0"></div>
+        <div class="promo-content">${p.brand?`<div class="promo-brand">${p.brand}</div>`:''}<div class="promo-title">${p.title}</div><div class="promo-sub">${p.sub}</div></div>
+      </div>`).join('')}</div>
+    <div class="section-title">Проекты</div>
+    <div class="carousel">${uniqueBrands.slice(0,12).map(name=>{const b=getBrand(name);return`
+      <div class="project-card" data-action="open-project" data-name="${name}">
+        <div class="proj-bg" style="${b.img?`background-image:url('${b.img}');background-size:cover;background-position:center`:`background:${b.bg}`};position:absolute;inset:0"></div>
+        <div class="proj-overlay"></div>
+        <div class="proj-info">
+          <div class="proj-name">${b.name}</div>
+          <div class="proj-type">${b.type}</div>
+          <div class="proj-line"></div>
+        </div>
+      </div>`}).join('')}</div>`;
+}
+
+function renderEvents() {
+  const filters = [{key:'promotions',label:'Акции'},{key:'news',label:'Новости'},{key:'events',label:'События'}];
+  const items = EVENTS_DATA[state.eventsFilter]||[];
+  return `
+    <div class="events-header"><h1>События</h1></div>
+    <div class="pill-tabs">${filters.map(f=>`<button class="pill-tab ${state.eventsFilter===f.key?'active':''}" data-action="filter-events" data-filter="${f.key}">${f.label}</button>`).join('')}</div>
+    <div class="event-feed">${items.map(e=>`
+      <div class="event-card"><div class="event-bg" style="${e.img?`background-image:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.3) 60%),url('${e.img}');background-size:cover;background-position:center`:`background:${e.bg}`};position:absolute;inset:0"></div>
+        <div class="event-content">${e.brand?`<div class="event-brand">${e.brand}</div>`:''}<div class="event-title">${e.title}</div><div class="event-sub">${e.sub}</div></div>
+      </div>`).join('')}</div>`;
+}
+
+function renderRestaurants() {
+  return `
+    <div class="rest-header"><h1>Рестораны</h1></div>
+    <div class="search-bar"><svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Найти ресторан" id="rest-search"></div>
+    ${AIRPORTS.map(a=>{
+      const rests = a.restaurants.map(r=>{const soon=r.endsWith('*');const b=getBrand(r);return{...b,soon}});
+      return `<div class="airport-group ${state.expanded.has(a.id)?'expanded':''}" data-airport="${a.id}">
+        <div class="airport-header" data-action="toggle-airport" data-id="${a.id}">
+          <span class="airport-icon">${AIRPORT_LOGOS[a.code]||a.icon}</span><span class="airport-name">${a.name}, ${a.terminal}</span>
+          <span class="airport-count">${rests.length}</span><span class="chevron">▾</span>
+        </div>
+        <div class="airport-list">${rests.map((r,i)=>`
+          <div class="rest-item" data-action="open-rest" data-airport="${a.id}" data-idx="${i}">
+            <div class="rest-icon">${r.img?`<img src="${r.img}" alt="${r.name}" loading="lazy">`:r.letter}</div>
+            <div class="rest-info"><div class="rest-name">${r.name}</div><div class="rest-type">${r.type}</div></div>
+            ${r.soon?'<span class="coming-soon">скоро</span>':'<span class="rest-arrow">›</span>'}
+          </div>`).join('')}</div></div>`}).join('')}`;
+}
+
+function renderMenu(restName) {
+  const menu = MENUS[restName]||MENUS['_default'];
+  return menu.map(cat=>`<div class="menu-cat"><div class="menu-cat-title">${cat.cat}</div>
+    ${cat.items.map(item=>{
+      const fid = restName+'::'+item.name;
+      const liked = favorites.has(fid);
+      return `<div class="menu-item">
+        <div class="menu-item-img">${item.img?`<img src="${item.img}" alt="${item.name}" loading="lazy">`:`<div style="background:linear-gradient(135deg,${item.color||'#2a2018'},${item.color||'#2a2018'}dd);width:100%;height:100%"></div>`}</div>
+        <div class="menu-item-info"><div class="menu-item-name">${item.name}</div><div class="menu-item-desc">${item.desc}</div></div>
+        <div class="menu-item-right"><div class="menu-item-price">${item.price}</div>
+          <div class="fav-btn ${liked?'liked':''}" data-action="toggle-fav" data-fid="${fid}">${heartSvg(liked)}</div>
+        </div></div>`}).join('')}</div>`).join('');
+}
+
+function renderAddresses() {
+  const isList = state.addrView==='list';
+  return `
+    <div class="addr-header"><h1>Адреса</h1></div>
+    <div class="toggle-bar">
+      <button class="toggle-btn ${isList?'active':''}" data-action="addr-view" data-view="list">Список</button>
+      <button class="toggle-btn ${!isList?'active':''}" data-action="addr-view" data-view="map">На карте</button>
+    </div>
+    <div class="addr-list ${isList?'active':''}">
+      ${AIRPORTS.map(a=>`<div class="addr-item"><div class="addr-name" style="display:flex;align-items:center;gap:10px">${AIRPORT_LOGOS[a.code]||a.icon} <span>${a.name}, ${a.terminal}</span></div><div class="addr-detail" style="padding-left:38px">${a.address} · ${a.restaurants.length} ресторанов</div></div>`).join('')}
+    </div>
+    <div class="addr-map ${!isList?'active':''}">
+      <div class="map-container"><svg viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="350" fill="#0a1220"/>
+        <path d="M50,80 Q100,60 200,70 Q300,55 380,80 L390,120 Q350,110 300,130 Q250,140 200,135 Q150,140 100,130 Q60,125 40,110 Z" fill="#111a28" opacity=".5"/>
+        <circle cx="150" cy="115" r="35" fill="#0e1e18" opacity=".4"/>
+        <g class="map-pin"><circle cx="145" cy="100" r="15"/><text x="145" y="101">11</text></g><text x="145" y="123" class="map-label">SVO</text>
+        <g class="map-pin"><circle cx="118" cy="120" r="13"/><text x="118" y="121">10</text></g><text x="118" y="141" class="map-label">VKO</text>
+        <g class="map-pin"><circle cx="172" cy="128" r="13"/><text x="172" y="129">11</text></g><text x="172" y="149" class="map-label">DME</text>
+        <g class="map-pin"><circle cx="155" cy="188" r="13"/><text x="155" y="189">8</text></g><text x="155" y="209" class="map-label">MRV</text>
+        <text x="80" y="75" fill="#333" font-size="10" font-style="italic">Москва</text>
+        <text x="130" y="205" fill="#333" font-size="9" font-style="italic">Мин. Воды</text>
+      </svg></div>
+    </div>
+    <div class="addr-search"><svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Найти ближайший ресторан"></div>`;
+}
+
+function renderProfile() {
+  const qr=[1,1,1,1,1,0,0,1,0,1,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,1,0,0,1,0,1,1,1,1,1,0,1,0,1,0,0,0,0,0,0,1,0,1,0,1,1,0,1,1,0,0,1,0,1,0,0,1,0,1,0,1,1,0,0,1,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,0,1,1,0,1,0,0,0,0,0,1,0,1,0,0];
+  return `
+    <div class="prof-header">
+      <div class="prof-left">
+        <div class="prof-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.2"><circle cx="12" cy="8" r="4"/><path d="M20 21c0-4.42-3.58-8-8-8s-8 3.58-8 8"/></svg></div>
+        <div><div class="home-greeting">${getGreeting()},</div><div style="font-size:22px;font-weight:300;letter-spacing:1px">${USER.name}</div></div>
+      </div>
+      <button class="bell-btn"><svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></button>
+    </div>
+    <div class="card-flip-wrap" data-action="flip-card">
+      <div class="card-flip ${state.flipped?'flipped':''}">
+        <div class="card-front bonus-card" style="position:relative"><div class="watermark">38</div>
+          <div class="label">бонусы</div><div class="points">${USER.points.toLocaleString()}</div>
+          <div class="level">${USER.level}</div><div class="rates">${USER.accrual} начисление · ${USER.redemption} списание</div>
+          <div style="position:absolute;bottom:14px;right:18px;font-size:10px;color:rgba(170,149,112,.4);letter-spacing:1px">ПОКАЗАТЬ QR</div>
+        </div>
+        <div class="card-back">
+          <div class="qr-grid">${qr.map(c=>`<div class="qr-cell ${c?'dark':'light'}"></div>`).join('')}</div>
+          <div class="qr-label">Покажите QR на кассе</div>
+          <div style="margin-top:6px;font-weight:500;color:#0a0a0a;letter-spacing:1px">${USER.name} · ${USER.points.toLocaleString()} бонусов</div>
+        </div>
+      </div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-box"><div class="st-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#aa9570" stroke-width="1.2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div><div><div class="st-num">${USER.orders}</div><div class="st-lbl">заказы</div></div></div>
+      <div class="stat-box"><div class="st-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#aa9570" stroke-width="1.2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div><div><div class="st-num">${favorites.size||'—'}</div><div class="st-lbl">избранное</div></div></div>
+      <div class="stat-box"><div class="st-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#aa9570" stroke-width="1.2"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/></svg></div><div><div class="st-num">${USER.gifts}</div><div class="st-lbl">подарки</div></div></div>
+      <div class="stat-box"><div class="st-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#aa9570" stroke-width="1.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div><div><div class="st-num">${USER.promo||'—'}</div><div class="st-lbl">промокод</div></div></div>
+    </div>
+    <div class="section-title" style="margin-top:8px">Сертификаты</div>
+    <div class="carousel">${CERTS.map((c,i)=>`
+      <div class="cert-card">
+        <div class="cert-name">${c.name}</div>
+        <div class="cert-amount">${c.amount}</div>
+        <div class="cert-btns">
+          <button class="cert-btn buy" data-action="buy-cert" data-idx="${i}">Купить</button>
+          <button class="cert-btn gift" data-action="gift-cert" data-idx="${i}">Подарить</button>
+        </div>
+      </div>`).join('')}</div>
+    <div style="padding:0 20px;margin-bottom:8px"><div style="height:1px;background:#1a1a1a"></div></div>
+    <div class="prof-menu">
+      <div class="prof-row"><span>Помощь</span><span class="arr">›</span></div>
+      <div class="prof-row"><span>Задать пароль</span><span class="arr">›</span></div>
+      <div class="prof-row" data-action="open-chat"><span>Чат с консультантом</span><span class="arr">›</span></div>
+    </div>`;
+}
+
+// ===== NAV =====
+function navigate(tab) {
+  state.tab = tab;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  const scr = document.getElementById('screen-'+tab);
+  const btn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+  switch(tab){
+    case 'home': scr.innerHTML=renderHome(); break;
+    case 'events': scr.innerHTML=renderEvents(); break;
+    case 'restaurants': scr.innerHTML=renderRestaurants(); break;
+    case 'addresses': scr.innerHTML=renderAddresses(); break;
+    case 'profile': scr.innerHTML=renderProfile(); break;
+  }
+  scr.classList.add('active');
+  if(btn) btn.classList.add('active');
+  scr.scrollTop=0;
+}
+
+// ===== EVENTS =====
+document.getElementById('app').addEventListener('click', function(e) {
+  const el = e.target.closest('[data-action]');
+  if(!el) return;
+  const a = el.dataset.action;
+
+  if(a==='navigate') navigate(el.dataset.tab);
+  else if(a==='filter-events') { state.eventsFilter=el.dataset.filter; document.getElementById('screen-events').innerHTML=renderEvents(); }
+  else if(a==='toggle-airport') {
+    const id=el.dataset.id;
+    state.expanded.has(id)?state.expanded.delete(id):state.expanded.add(id);
+    el.closest('.airport-group').classList.toggle('expanded');
+  }
+  else if(a==='open-rest') {
+    const ap=AIRPORTS.find(x=>x.id===el.dataset.airport);
+    if(!ap) return;
+    const rName=ap.restaurants[parseInt(el.dataset.idx)];
+    if(!rName||rName.endsWith('*')) return;
+    document.getElementById('modal-title').textContent=rName;
+    document.getElementById('modal-body').innerHTML=renderMenu(rName);
+    document.getElementById('rest-modal').classList.add('open');
+  }
+  else if(a==='close-modal') document.getElementById('rest-modal').classList.remove('open');
+  else if(a==='toggle-fav') {
+    const fid=el.dataset.fid;
+    favorites.has(fid)?favorites.delete(fid):favorites.add(fid);
+    USER.favorites=favorites.size;
+    el.classList.toggle('liked');
+    el.innerHTML=heartSvg(favorites.has(fid));
+  }
+  else if(a==='addr-view') { state.addrView=el.dataset.view; document.getElementById('screen-addresses').innerHTML=renderAddresses(); }
+  else if(a==='flip-card') { state.flipped=!state.flipped; const f=document.querySelector('.card-flip'); if(f) f.classList.toggle('flipped'); }
+  else if(a==='open-chat') document.getElementById('chat-modal').classList.add('open');
+  else if(a==='close-chat') document.getElementById('chat-modal').classList.remove('open');
+  else if(a==='send-chat') {
+    const inp=document.getElementById('chat-input'), msg=inp.value.trim();
+    if(!msg) return;
+    const msgs=document.getElementById('chat-msgs');
+    msgs.innerHTML+=`<div class="chat-msg user">${msg}</div>`; inp.value=''; msgs.scrollTop=msgs.scrollHeight;
+    setTimeout(()=>{ msgs.innerHTML+=`<div class="chat-msg bot">${AI_RESP[Math.floor(Math.random()*AI_RESP.length)]}</div>`; msgs.scrollTop=msgs.scrollHeight; },700);
+  }
+  else if(a==='buy-cert'||a==='gift-cert') {
+    const c=CERTS[parseInt(el.dataset.idx)];
+    const isGift=a==='gift-cert';
+    document.getElementById('cert-title').textContent=isGift?'Подарить сертификат':'Купить сертификат';
+    document.getElementById('cert-body').innerHTML=`
+      <div style="text-align:center;padding:20px 0">
+        <div style="font-size:40px;font-weight:200;color:var(--gold-light);margin-bottom:12px">${c.amount}</div>
+        <div style="font-size:12px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;margin-bottom:24px">${c.name}</div>
+        ${isGift?`<div style="margin-bottom:16px"><input type="text" placeholder="Имя получателя" style="width:100%;padding:14px 16px;background:var(--bg2);border:1px solid #1e1e1e;border-radius:10px;color:#fff;font-size:13px;margin-bottom:10px"><input type="text" placeholder="Телефон или email" style="width:100%;padding:14px 16px;background:var(--bg2);border:1px solid #1e1e1e;border-radius:10px;color:#fff;font-size:13px"></div>`:''}
+        <button style="width:100%;padding:16px;background:var(--gold);color:#000;border:none;border-radius:10px;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-weight:500">${isGift?'Отправить подарок':'Оплатить'}</button>
+        <div style="font-size:11px;color:var(--text3);margin-top:12px">Сертификат будет${isGift?' отправлен получателю':' добавлен в ваш аккаунт'}</div>
+      </div>`;
+    document.getElementById('cert-modal').classList.add('open');
+  }
+  else if(a==='close-cert') document.getElementById('cert-modal').classList.remove('open');
+  else if(a==='open-project') {
+    const name=el.dataset.name;
+    document.getElementById('modal-title').textContent=name;
+    document.getElementById('modal-body').innerHTML=renderMenu(name);
+    document.getElementById('rest-modal').classList.add('open');
+  }
+});
+
+document.getElementById('chat-input').addEventListener('keydown',function(e){if(e.key==='Enter')document.querySelector('[data-action="send-chat"]').click()});
+
+document.getElementById('app').addEventListener('input',function(e){
+  if(e.target.id==='rest-search'){
+    const q=e.target.value.toLowerCase();
+    document.querySelectorAll('.airport-group').forEach(g=>{
+      let has=false;
+      g.querySelectorAll('.rest-item').forEach(i=>{const n=i.querySelector('.rest-name').textContent.toLowerCase();const m=!q||n.includes(q);i.style.display=m?'':'none';if(m)has=true});
+      g.style.display=has?'':'none';
+      if(q&&has)g.classList.add('expanded');
+    });
+  }
+});
+
+// ===== INIT =====
+setTimeout(()=>{document.getElementById('splash').classList.add('hidden');navigate('home')},1400);
+</script>
+</body>
+</html>
