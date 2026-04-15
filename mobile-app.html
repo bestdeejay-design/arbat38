@@ -166,12 +166,13 @@ body.light-theme .restaurant-card .rc-name{color:#000}
 .profile-item .pi-label{font-size:13px;font-weight:300}
 
 /* Prototype Links */
-.prototype-link{display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg3);border-radius:8px;text-decoration:none;margin-bottom:8px;transition:all .2s}
+.prototype-link{display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg3);border-radius:8px;text-decoration:none;margin-bottom:8px;transition:all .2s;position:relative}
 .prototype-link:hover{transform:translateX(4px)}
 .prototype-link:active{transform:scale(0.98)}
 .prototype-link .pl-icon{font-size:20px}
 .prototype-link .pl-title{font-size:13px;font-weight:400;color:#fff}
 .prototype-link .pl-desc{font-size:11px;color:var(--text3)}
+.prototype-link .pl-external{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;opacity:0.4}
 body.light-theme .prototype-link .pl-title{color:#000}
 body.light-theme .prototype-link{background:var(--bg3)}
 
@@ -577,26 +578,29 @@ function renderProfile() {
       <div style="background:var(--bg2);border:1px solid var(--gold-border);border-radius:var(--radius);padding:16px">
         <div style="font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px">Другие прототипы</div>
         <div style="display:flex;flex-direction:column;gap:8px">
-          <a href="airport-staff.html" class="prototype-link">
+          <a href="airport-staff.html" class="prototype-link" target="_blank" rel="noopener">
             <span class="pl-icon">🏢</span>
             <div>
               <div class="pl-title">Кабинет сотрудника аэропорта</div>
               <div class="pl-desc">Создание ваучеров для рейсов</div>
             </div>
+            <span class="pl-external">↗</span>
           </a>
-          <a href="cashier.html" class="prototype-link">
+          <a href="cashier.html" class="prototype-link" target="_blank" rel="noopener">
             <span class="pl-icon">💳</span>
             <div>
               <div class="pl-title">Страница кассира</div>
               <div class="pl-desc">Сканирование и погашение ваучеров</div>
             </div>
+            <span class="pl-external">↗</span>
           </a>
-          <a href="restaurant-admin.html" class="prototype-link">
+          <a href="restaurant-admin.html" class="prototype-link" target="_blank" rel="noopener">
             <span class="pl-icon">🍔</span>
             <div>
               <div class="pl-title">Админка ресторана</div>
               <div class="pl-desc">Управление заказами и меню</div>
             </div>
+            <span class="pl-external">↗</span>
           </a>
         </div>
       </div>
