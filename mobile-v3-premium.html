@@ -125,18 +125,18 @@ input{border:none;background:none;color:inherit;font:inherit;outline:none}
 .chip.active{background:linear-gradient(135deg,rgba(212,175,55,0.2),rgba(212,175,55,0.1));border-color:var(--gold);color:var(--gold-light);box-shadow:0 4px 16px rgba(212,175,55,0.2)}
 
 /* ===== RESTAURANT CARDS ===== */
-.restaurants-scroll{display:flex;gap:20px;overflow-x:auto;padding:0 28px 32px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
-.restaurant-card{flex:0 0 85%;scroll-snap-align:start;border-radius:var(--radius2);overflow:hidden;position:relative;cursor:pointer;transition:all 0.4s cubic-bezier(0.4,0,0.2,1)}
-.restaurant-card:hover{transform:translateY(-8px)}
+.restaurants-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:0 28px 32px}
+.restaurant-card{border-radius:var(--radius2);overflow:hidden;position:relative;cursor:pointer;transition:all 0.4s cubic-bezier(0.4,0,0.2,1)}
+.restaurant-card:hover{transform:translateY(-6px)}
 .restaurant-card:active{transform:scale(0.98)}
 .restaurant-card .rc-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform 0.6s ease}
 .restaurant-card:hover .rc-bg{transform:scale(1.1)}
-.restaurant-card .rc-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.9) 0%,rgba(0,0,0,0.3) 50%,transparent 100%)}
-.restaurant-card .rc-content{position:relative;padding:28px 24px 24px}
-.restaurant-card .rc-name{font-size:22px;font-weight:800;margin-bottom:8px;letter-spacing:-0.5px}
-.restaurant-card .rc-meta{display:flex;gap:16px;font-size:13px;color:var(--text2)}
-.restaurant-card .rc-meta span{display:flex;align-items:center;gap:4px}
-.restaurant-card .rc-badge{position:absolute;top:16px;right:16px;padding:8px 14px;background:rgba(212,175,55,0.9);color:#000;border-radius:12px;font-size:11px;font-weight:700;backdrop-filter:blur(10px)}
+.restaurant-card .rc-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.9) 0%,rgba(0,0,0,0.2) 60%,transparent 100%)}
+.restaurant-card .rc-content{position:relative;padding:20px 16px 16px}
+.restaurant-card .rc-name{font-size:14px;font-weight:700;margin-bottom:4px;letter-spacing:-0.3px}
+.restaurant-card .rc-meta{display:flex;gap:8px;font-size:11px;color:var(--text2)}
+.restaurant-card .rc-meta span{display:flex;align-items:center;gap:3px}
+.restaurant-card .rc-badge{position:absolute;top:12px;right:12px;padding:6px 10px;background:rgba(212,175,55,0.9);color:#000;border-radius:10px;font-size:10px;font-weight:700;backdrop-filter:blur(10px)}
 
 /* ===== SEARCH ===== */
 .search-container{padding:32px 28px 24px}
@@ -396,9 +396,9 @@ scr.scrollTop=0;
 function renderHome(){
 return`<div class="hero"><div class="hero-greeting">${getGreeting()},</div><div class="hero-name">${USER.name}</div></div>
 ${state.activeVoucher?`<div class="voucher-card"><div class="voucher-badge">✈️ АКТИВНЫЙ ВАУЧЕР</div><div class="voucher-flight">Рейс ${state.activeVoucher.flight}</div><div class="voucher-info">${state.activeVoucher.type} · до ${state.activeVoucher.amount} ₽<br>Действителен до ${state.activeVoucher.valid}</div></div>`:''}
-<div class="section-header"><div class="section-title">Рестораны</div><div class="section-link">Все →</div></div>
-<div class="filter-bar">${['all','burgers','coffee','pub'].map(f=>`<div class="chip ${state.currentFilter===f?'active':''}" data-action="filter" data-filter="${f}">${f==='all'?'Все':f==='burgers'?'🍔 Бургеры':f==='coffee'?'☕ Кофе':'🍺 Паб'}</div>`).join('')}</div>
-<div class="restaurants-scroll">${getFiltered().map(r=>`<div class="restaurant-card" data-action="menu" data-id="${r.id}"><div class="rc-bg" style="background-image:url('${r.image}')"></div><div class="rc-overlay"></div><div class="rc-badge">⭐ ${r.rating}</div><div class="rc-content"><div class="rc-name">${r.name}</div><div class="rc-meta"><span>🕐 ${r.time} мин</span><span>📍 ${r.type}</span></div></div></div>`).join('')}</div>`}
+<div class="section-header"><div class="section-title">Рестораны</div><div class="section-link">Все ${RESTAURANTS.length} →</div></div>
+<div class="filter-bar">${['all','burgers','coffee','wine','pub','luxury','eastern','russian','georgian','bar','fine','lounge','buffet'].map(f=>`<div class="chip ${state.currentFilter===f?'active':''}" data-action="filter" data-filter="${f}">${f==='all'?'Все':f==='burgers'?'🍔':f==='coffee'?'☕':f==='wine'?'🍷':f==='pub'?'🍺':f==='luxury'?'🥂':f==='eastern'?'🍛':f==='russian'?'🥟':f==='georgian'?'🫓':f==='bar'?'🍸':f==='fine'?'✨':f==='lounge'?'💨':'🍽️'}</div>`).join('')}</div>
+<div class="restaurants-grid">${getFiltered().map(r=>`<div class="restaurant-card" data-action="menu" data-id="${r.id}"><div class="rc-bg" style="background-image:url('${r.image}')"></div><div class="rc-overlay"></div><div class="rc-badge">⭐ ${r.rating}</div><div class="rc-content"><div class="rc-name">${r.name}</div><div class="rc-meta"><span>🕐 ${r.time}</span><span>📍 ${r.type}</span></div></div></div>`).join('')}</div>`}
 
 function getFiltered(){return state.currentFilter==='all'?RESTAURANTS:RESTAURANTS.filter(r=>r.cat===state.currentFilter)}
 
