@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0A0E27">
+<title>Arbat 38 - Premium Airport Experience</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Helvetica Neue',sans-serif;background:#0A0E27;color:#fff;overflow:hidden;height:100vh;display:flex;justify-content:center}
+a{color:inherit;text-decoration:none}
+button{border:none;background:none;color:inherit;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+input{border:none;background:none;color:inherit;font:inherit;outline:none}
+::-webkit-scrollbar{display:none}
+
+:root{
+--bg:#0A0E27;--bg2:#0F1535;--bg3:#151B3D;
+--gold:#D4AF37;--gold-light:#F4D068;--gold-dark:#B8960C;
+--accent:#C6A43F;--accent2:#E8C84A;
+--glass:rgba(255,255,255,0.05);--glass2:rgba(255,255,255,0.08);
+--text2:rgba(255,255,255,0.7);--text3:rgba(255,255,255,0.5);
+--radius:20px;--radius2:28px;
+--shadow:0 8px 32px rgba(0,0,0,0.4);
+--shadow-gold:0 8px 32px rgba(212,175,55,0.3);
+}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+@keyframes glow{0%,100%{box-shadow:0 0 40px rgba(212,175,55,0.4)}50%{box-shadow:0 0 80px rgba(212,175,55,0.8)}}
+@keyframes rotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes shimmer{0%{background-position:-1000px 0}100%{background-position:1000px 0}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes gradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+#app{width:100%;max-width:430px;height:100vh;background:var(--bg);position:relative;overflow:hidden}
+
+/* ===== ANIMATED BACKGROUND ===== */
+.bg-gradient{position:absolute;inset:0;background:linear-gradient(135deg,#0A0E27 0%,#1A1F4B 25%,#0F1535 50%,#1E2456 75%,#0A0E27 100%);background-size:400% 400%;animation:gradient 15s ease infinite;z-index:0}
+.bg-particles{position:absolute;inset:0;z-index:1;overflow:hidden}
+.particle{position:absolute;background:radial-gradient(circle,rgba(212,175,55,0.3) 0%,transparent 70%);border-radius:50%;animation:float 6s ease-in-out infinite}
+.particle:nth-child(1){width:100px;height:100px;top:10%;left:10%;animation-delay:0s}
+.particle:nth-child(2){width:150px;height:150px;top:60%;right:10%;animation-delay:2s}
+.particle:nth-child(3){width:80px;height:80px;bottom:20%;left:30%;animation-delay:4s}
+
+/* ===== SPLASH ===== */
+#splash{position:absolute;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1s ease,visibility 1s ease}
+#splash.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.splash-bg{position:absolute;inset:0;background:radial-gradient(circle at center,#1A1F4B 0%,#0A0E27 70%)}
+.splash-content{position:relative;z-index:2;text-align:center}
+.splash-logo-wrap{width:160px;height:160px;margin:0 auto 32px;position:relative}
+.splash-logo-ring{position:absolute;inset:0;border:2px solid rgba(212,175,55,0.3);border-radius:50%;animation:rotate 8s linear infinite}
+.splash-logo-ring::before{content:'';position:absolute;inset:10px;border:2px solid rgba(212,175,55,0.2);border-radius:50%}
+.splash-logo-inner{position:absolute;inset:20px;background:linear-gradient(135deg,rgba(212,175,55,0.2),rgba(212,175,55,0.05));border-radius:50%;display:flex;align-items:center;justify-content:center;animation:glow 3s ease-in-out infinite}
+.splash-logo-inner svg{width:80px;height:80px}
+.splash-brand{font-size:32px;font-weight:700;letter-spacing:6px;background:linear-gradient(135deg,var(--gold),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.splash-tagline{font-size:12px;color:var(--text3);letter-spacing:4px;text-transform:uppercase}
+.splash-loader{margin-top:48px;width:200px;height:2px;background:var(--glass);border-radius:2px;overflow:hidden}
+.splash-loader-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));animation:shimmer 2s ease-in-out infinite;width:50%;border-radius:2px}
+
+/* ===== ONBOARDING ===== */
+#onboarding{position:absolute;inset:0;z-index:90;opacity:0;visibility:hidden;transition:all 0.8s ease}
+#onboarding.active{opacity:1;visibility:visible}
+.onboarding-bg{position:absolute;inset:0;background:linear-gradient(135deg,#0A0E27 0%,#1A1F4B 100%)}
+.onboarding-container{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;padding:60px 32px 40px}
+.onboarding-progress{height:3px;background:var(--glass);border-radius:3px;margin-bottom:60px;overflow:hidden}
+.onboarding-progress-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));transition:width 0.5s ease;border-radius:3px}
+.onboarding-slides{flex:1;position:relative;overflow:hidden}
+.onboarding-slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0;transform:translateX(100px);transition:all 0.6s cubic-bezier(0.4,0,0.2,1)}
+.onboarding-slide.active{opacity:1;transform:translateX(0)}
+.onboarding-slide.prev{opacity:0;transform:translateX(-100px)}
+.onboarding-illustration{width:240px;height:240px;margin-bottom:48px;position:relative}
+.onboarding-illustration .circle{position:absolute;inset:0;border:2px solid rgba(212,175,55,0.2);border-radius:50%;animation:glow 4s ease-in-out infinite}
+.onboarding-illustration .circle:nth-child(2){inset:20px;animation-delay:1s}
+.onboarding-illustration .icon{position:absolute;inset:40px;background:linear-gradient(135deg,rgba(212,175,55,0.15),rgba(212,175,55,0.05));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:80px}
+.onboarding-title{font-size:32px;font-weight:700;line-height:1.3;margin-bottom:16px;background:linear-gradient(135deg,#fff,rgba(255,255,255,0.8));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.onboarding-subtitle{font-size:16px;color:var(--text2);line-height:1.6;max-width:300px}
+.onboarding-footer{margin-top:auto}
+.onboarding-dots{display:flex;gap:10px;justify-content:center;margin-bottom:32px}
+.onboarding-dot{width:8px;height:8px;border-radius:50%;background:var(--glass2);transition:all 0.4s ease}
+.onboarding-dot.active{width:32px;background:var(--gold);border-radius:4px}
+.onboarding-btn{width:100%;padding:20px;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#000;border-radius:16px;font-size:16px;font-weight:700;letter-spacing:1px;box-shadow:var(--shadow-gold);transition:all 0.3s ease}
+.onboarding-btn:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(212,175,55,0.5)}
+
+/* ===== SCREENS ===== */
+.screen{position:absolute;top:0;left:0;right:0;bottom:80px;overflow-y:auto;-webkit-overflow-scrolling:touch;opacity:0;visibility:hidden;transform:translateY(20px);transition:all 0.5s cubic-bezier(0.4,0,0.2,1);z-index:5}
+.screen.active{opacity:1;visibility:visible;transform:translateY(0)}
+
+/* ===== TAB BAR ===== */
+#tab-bar{position:absolute;bottom:0;left:0;right:0;height:80px;background:rgba(10,14,39,0.9);backdrop-filter:blur(30px);border-top:1px solid rgba(212,175,55,0.1);display:flex;align-items:center;justify-content:space-around;z-index:50;padding-bottom:8px}
+.tab{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 16px;transition:all 0.3s ease;position:relative}
+.tab::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:40px;height:3px;background:var(--gold);border-radius:3px;opacity:0;transition:opacity 0.3s ease}
+.tab.active::before{opacity:1}
+.tab svg{width:24px;height:24px;transition:all 0.3s ease}
+.tab svg *{stroke:var(--text3);stroke-width:1.5;transition:stroke 0.3s ease}
+.tab.active svg *{stroke:var(--gold)}
+.tab span{font-size:10px;font-weight:600;color:var(--text3);transition:color 0.3s ease}
+.tab.active span{color:var(--gold)}
+
+/* ===== HERO ===== */
+.hero{padding:48px 28px 32px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;right:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(212,175,55,0.1) 0%,transparent 60%);pointer-events:none}
+.hero-greeting{font-size:15px;color:var(--text2);margin-bottom:8px;letter-spacing:1px}
+.hero-name{font-size:36px;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,#fff 0%,var(--gold-light) 50%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200% auto;animation:shimmer 3s linear infinite}
+
+/* ===== VOUCHER CARD ===== */
+.voucher-card{margin:0 28px 32px;padding:28px;background:linear-gradient(135deg,rgba(212,175,55,0.15),rgba(212,175,55,0.05));border:1px solid rgba(212,175,55,0.3);border-radius:var(--radius2);backdrop-filter:blur(10px);position:relative;overflow:hidden;animation:slideUp 0.6s ease}
+.voucher-card::before{content:'';position:absolute;top:-100px;right:-100px;width:200px;height:200px;background:radial-gradient(circle,rgba(212,175,55,0.2) 0%,transparent 70%);pointer-events:none}
+.voucher-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold-light),var(--gold))}
+.voucher-badge{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#000;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:1.5px;margin-bottom:16px;box-shadow:0 4px 16px rgba(212,175,55,0.4)}
+.voucher-flight{font-size:28px;font-weight:800;margin-bottom:8px;letter-spacing:-0.5px}
+.voucher-info{font-size:14px;color:var(--text2);line-height:1.6}
+
+/* ===== SECTION ===== */
+.section-header{display:flex;justify-content:space-between;align-items:center;padding:0 28px;margin-bottom:20px}
+.section-title{font-size:20px;font-weight:700;letter-spacing:-0.5px}
+.section-link{font-size:13px;color:var(--gold);font-weight:600}
+
+/* ===== FILTER CHIPS ===== */
+.filter-bar{display:flex;gap:12px;overflow-x:auto;padding:0 28px 28px;-webkit-overflow-scrolling:touch}
+.chip{padding:12px 20px;background:var(--glass);border:1px solid rgba(255,255,255,0.1);border-radius:16px;font-size:13px;font-weight:600;white-space:nowrap;transition:all 0.3s ease;cursor:pointer}
+.chip:hover{background:var(--glass2);border-color:rgba(255,255,255,0.2)}
+.chip.active{background:linear-gradient(135deg,rgba(212,175,55,0.2),rgba(212,175,55,0.1));border-color:var(--gold);color:var(--gold-light);box-shadow:0 4px 16px rgba(212,175,55,0.2)}
+
+/* ===== RESTAURANT CARDS ===== */
+.restaurants-scroll{display:flex;gap:20px;overflow-x:auto;padding:0 28px 32px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.restaurant-card{flex:0 0 85%;scroll-snap-align:start;border-radius:var(--radius2);overflow:hidden;position:relative;cursor:pointer;transition:all 0.4s cubic-bezier(0.4,0,0.2,1)}
+.restaurant-card:hover{transform:translateY(-8px)}
+.restaurant-card:active{transform:scale(0.98)}
+.restaurant-card .rc-bg{position:absolute;inset:0;background-size:cover;background-position:center;transition:transform 0.6s ease}
+.restaurant-card:hover .rc-bg{transform:scale(1.1)}
+.restaurant-card .rc-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.9) 0%,rgba(0,0,0,0.3) 50%,transparent 100%)}
+.restaurant-card .rc-content{position:relative;padding:28px 24px 24px}
+.restaurant-card .rc-name{font-size:22px;font-weight:800;margin-bottom:8px;letter-spacing:-0.5px}
+.restaurant-card .rc-meta{display:flex;gap:16px;font-size:13px;color:var(--text2)}
+.restaurant-card .rc-meta span{display:flex;align-items:center;gap:4px}
+.restaurant-card .rc-badge{position:absolute;top:16px;right:16px;padding:8px 14px;background:rgba(212,175,55,0.9);color:#000;border-radius:12px;font-size:11px;font-weight:700;backdrop-filter:blur(10px)}
+
+/* ===== SEARCH ===== */
+.search-container{padding:32px 28px 24px}
+.search-title{font-size:32px;font-weight:800;margin-bottom:8px}
+.search-subtitle{font-size:14px;color:var(--text2);margin-bottom:24px}
+.search-box{position:relative;margin-bottom:28px}
+.search-input{width:100%;padding:18px 18px 18px 56px;background:var(--glass2);border:1px solid rgba(255,255,255,0.1);border-radius:16px;font-size:15px;color:#fff;transition:all 0.3s ease}
+.search-input:focus{border-color:var(--gold);background:rgba(212,175,55,0.05);box-shadow:0 0 0 4px rgba(212,175,55,0.1)}
+.search-icon{position:absolute;left:20px;top:50%;transform:translateY(-50%);font-size:20px;opacity:0.5}
+
+/* ===== GRID ===== */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:0 28px 32px}
+.card{border-radius:20px;overflow:hidden;background:var(--glass);border:1px solid rgba(255,255,255,0.05);transition:all 0.4s ease;cursor:pointer}
+.card:hover{transform:translateY(-4px);background:var(--glass2);border-color:rgba(212,175,55,0.2);box-shadow:var(--shadow-gold)}
+.card-img{width:100%;height:160px;background-size:cover;background-position:center}
+.card-body{padding:16px}
+.card-title{font-size:15px;font-weight:700;margin-bottom:6px}
+.card-meta{font-size:12px;color:var(--text2)}
+
+/* ===== MENU ===== */
+.menu-header{padding:24px 28px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;gap:16px}
+.menu-back{width:40px;height:40px;border-radius:12px;background:var(--glass);display:flex;align-items:center;justify-content:center;font-size:20px;transition:all 0.3s ease}
+.menu-back:hover{background:var(--glass2)}
+.menu-title{font-size:24px;font-weight:800}
+.menu-tabs{display:flex;gap:10px;overflow-x:auto;padding:16px 28px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.menu-tab{padding:10px 18px;border-radius:14px;background:var(--glass);font-size:13px;font-weight:600;white-space:nowrap;transition:all 0.3s ease;cursor:pointer}
+.menu-tab.active{background:rgba(212,175,55,0.15);color:var(--gold-light)}
+.menu-items{padding:24px 28px;display:grid;gap:16px}
+.menu-item{display:flex;gap:16px;padding:20px;background:var(--glass);border:1px solid rgba(255,255,255,0.05);border-radius:20px;transition:all 0.3s ease;cursor:pointer}
+.menu-item:hover{background:var(--glass2);border-color:rgba(212,175,55,0.2);transform:translateX(4px)}
+.menu-item-img{width:90px;height:90px;border-radius:16px;background-size:cover;background-position:center;flex-shrink:0}
+.menu-item-info{flex:1}
+.menu-item-name{font-size:16px;font-weight:700;margin-bottom:4px}
+.menu-item-desc{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.4}
+.menu-item-footer{display:flex;justify-content:space-between;align-items:center}
+.menu-item-price{font-size:20px;font-weight:800;color:var(--gold)}
+.menu-item-add{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#000;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;transition:all 0.3s ease}
+.menu-item-add:hover{transform:scale(1.1);box-shadow:var(--shadow-gold)}
+
+/* ===== CART ===== */
+.cart-item{display:flex;gap:16px;padding:20px 28px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.cart-item-img{width:90px;height:90px;border-radius:16px;background-size:cover;background-position:center;flex-shrink:0}
+.cart-item-info{flex:1}
+.cart-item-name{font-size:16px;font-weight:700;margin-bottom:12px}
+.cart-item-controls{display:flex;align-items:center;gap:16px}
+.cart-qty{font-size:18px;font-weight:700;min-width:24px;text-align:center}
+.cart-btn{width:36px;height:36px;border-radius:12px;border:1px solid rgba(212,175,55,0.3);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:20px;transition:all 0.3s ease}
+.cart-btn:active{background:rgba(212,175,55,0.1)}
+.cart-item-price{font-size:20px;font-weight:800;color:var(--gold)}
+.cart-summary{padding:28px;background:var(--glass2);margin:28px;border-radius:var(--radius2);border:1px solid rgba(255,255,255,0.1)}
+.cart-row{display:flex;justify-content:space-between;margin-bottom:16px;font-size:15px}
+.cart-row.total{font-size:24px;font-weight:800;color:var(--gold-light);padding-top:20px;border-top:1px solid rgba(212,175,55,0.2);margin-top:20px}
+.btn-primary{width:100%;padding:20px;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#000;border-radius:16px;font-size:16px;font-weight:700;letter-spacing:0.5px;box-shadow:var(--shadow-gold);transition:all 0.3s ease;margin-top:20px}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(212,175,55,0.5)}
+
+/* ===== PROFILE ===== */
+.profile-header{padding:60px 28px 40px;text-align:center;position:relative}
+.profile-header::before{content:'';position:absolute;top:0;left:0;right:0;height:200px;background:linear-gradient(180deg,rgba(212,175,55,0.1) 0%,transparent 100%)}
+.profile-avatar{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-light));display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:800;color:#000;margin:0 auto 20px;position:relative;box-shadow:var(--shadow-gold)}
+.profile-avatar::after{content:'';position:absolute;inset:-4px;border:2px solid rgba(212,175,55,0.3);border-radius:50%}
+.profile-name{font-size:28px;font-weight:800;margin-bottom:4px}
+.profile-phone{font-size:14px;color:var(--text2)}
+.profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:0 28px;margin-bottom:28px}
+.stat{padding:24px 16px;background:var(--glass);border:1px solid rgba(255,255,255,0.05);border-radius:20px;text-align:center}
+.stat-value{font-size:28px;font-weight:800;color:var(--gold);margin-bottom:4px}
+.stat-label{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+.profile-section{padding:0 28px;margin-bottom:24px}
+.profile-card{padding:24px;background:var(--glass);border:1px solid rgba(255,255,255,0.05);border-radius:var(--radius2)}
+.profile-card h3{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:2px;margin-bottom:16px;font-weight:700}
+.profile-link{display:flex;align-items:center;gap:12px;padding:16px;background:var(--glass);border-radius:14px;margin-bottom:8px;transition:all 0.3s ease}
+.profile-link:hover{background:var(--glass2);transform:translateX(4px)}
+.profile-link span{font-size:20px}
+
+/* ===== VOUCHER FORM ===== */
+.voucher-form-container{padding:32px 28px}
+.voucher-title{font-size:32px;font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,#fff,var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.voucher-subtitle{font-size:15px;color:var(--text2);margin-bottom:32px;line-height:1.6}
+.form{background:var(--glass);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius2);padding:28px;margin-bottom:24px}
+.form-group{margin-bottom:20px}
+.form-label{display:block;font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:600}
+.form-input{width:100%;padding:16px;background:var(--glass2);border:1px solid rgba(255,255,255,0.1);border-radius:14px;font-size:15px;color:#fff;transition:all 0.3s ease}
+.form-input:focus{border-color:var(--gold);background:rgba(212,175,55,0.05);box-shadow:0 0 0 4px rgba(212,175,55,0.1)}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#000;padding:16px 32px;border-radius:16px;font-size:14px;font-weight:700;z-index:200;transition:transform 0.5s cubic-bezier(0.68,-0.55,0.265,1.55);pointer-events:none;box-shadow:0 8px 32px rgba(212,175,55,0.4)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+.badge{position:absolute;top:0;right:0;min-width:20px;height:20px;padding:0 6px;background:var(--gold);color:#000;border-radius:10px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="bg-gradient"></div>
+<div class="bg-particles"><div class="particle"></div><div class="particle"></div><div class="particle"></div></div>
+
+<div id="splash">
+<div class="splash-bg"></div>
+<div class="splash-content">
+<div class="splash-logo-wrap">
+<div class="splash-logo-ring"></div>
+<div class="splash-logo-inner">
+<svg viewBox="0 0 100 100" fill="none">
+<path d="M50 10 L90 30 L90 70 L50 90 L10 70 L10 30 Z" stroke="#D4AF37" stroke-width="2" fill="rgba(212,175,55,0.1)"/>
+<text x="50" y="45" text-anchor="middle" font-size="16" fill="#D4AF37" font-weight="700" font-family="Georgia,serif">ARBAT</text>
+<text x="50" y="65" text-anchor="middle" font-size="24" fill="#D4AF37" font-weight="800" font-family="Georgia,serif">38</text>
+</svg>
+</div>
+</div>
+<div class="splash-brand">ARBAT 38</div>
+<div class="splash-tagline">Premium Airport Experience</div>
+<div class="splash-loader"><div class="splash-loader-bar"></div></div>
+</div>
+</div>
+
+<div id="onboarding">
+<div class="onboarding-bg"></div>
+<div class="onboarding-container">
+<div class="onboarding-progress"><div class="onboarding-progress-bar" id="obProgress"></div></div>
+<div class="onboarding-slides">
+<div class="onboarding-slide active" data-slide="0">
+<div class="onboarding-illustration">
+<div class="circle"></div>
+<div class="circle"></div>
+<div class="icon">🛋️</div>
+</div>
+<div class="onboarding-title">Ваша личная гостиная в аэропорту</div>
+<div class="onboarding-subtitle">Заказывайте еду из премиальных ресторанов и получайте ваучеры при задержках</div>
+</div>
+<div class="onboarding-slide" data-slide="1">
+<div class="onboarding-illustration">
+<div class="circle"></div>
+<div class="circle"></div>
+<div class="icon">✈️</div>
+</div>
+<div class="onboarding-title">Комфорт первого класса</div>
+<div class="onboarding-subtitle">Предзаказ блюд и мгновенное получение ваучеров за пару секунд</div>
+</div>
+<div class="onboarding-slide" data-slide="2">
+<div class="onboarding-illustration">
+<div class="circle"></div>
+<div class="circle"></div>
+<div class="icon">🎫</div>
+</div>
+<div class="onboarding-title">Ваш ключ к комфорту</div>
+<div class="onboarding-subtitle">Эксклюзивный доступ к ресторанам и услугам аэропорта</div>
+</div>
+</div>
+<div class="onboarding-footer">
+<div class="onboarding-dots"><div class="onboarding-dot active"></div><div class="onboarding-dot"></div><div class="onboarding-dot"></div></div>
+<button class="onboarding-btn" id="obBtn">Продолжить</button>
+</div>
+</div>
+</div>
+
+<div id="screen-voucher" class="screen"></div>
+<div id="screen-home" class="screen"></div>
+<div id="screen-search" class="screen"></div>
+<div id="screen-cart" class="screen"></div>
+<div id="screen-profile" class="screen"></div>
+<div id="screen-menu" class="screen" style="z-index:10"></div>
+
+<div id="tab-bar">
+<div class="tab active" data-tab="home"><svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span>Главная</span></div>
+<div class="tab" data-tab="voucher"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg><span>Ваучеры</span></div>
+<div class="tab" data-tab="search"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Поиск</span></div>
+<div class="tab" data-tab="cart"><svg viewBox="0 0 24 24" fill="none"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg><span>Корзина</span><span class="badge" id="cartBadge" style="display:none">0</span></div>
+<div class="tab" data-tab="profile"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4"/><path d="M20 21c0-4.42-3.58-8-8-8s-8 3.58-8 8"/></svg><span>Профиль</span></div>
+</div>
+
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+const USER={name:'Александр',phone:'+7 (999) 123-45-67',bonuses:3723,orders:12};
+let state={tab:'home',activeVoucher:null,cart:[],currentFilter:'all',obSlide:0};
+const RESTAURANTS=[
+{id:1,name:'BLACK STAR BURGER',type:'Premium Burgers',cat:'burgers',rating:4.9,time:'15-20',image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&h=600&fit=crop',menu:[
+{id:101,name:'Wagyu Burger',desc:'Мраморная говядина, трюфельный айоли, сыр грюйер',price:890,image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&h=300&fit=crop',cat:'burgers'},
+{id:102,name:'Truffle Fries',desc:'Картофель фри с трюфельным маслом и пармезаном',price:420,image:'https://images.unsplash.com/photo-1573080496219-bb0809865802?w=300&h=300&fit=crop',cat:'sides'}
+]},
+{id:2,name:'COFFEEMANIA',type:'Artisan Coffee',cat:'coffee',rating:4.8,time:'10-15',image:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&h=600&fit=crop',menu:[
+{id:201,name:'Ethiopian Pour Over',desc:'Зерна из Иргачеффе, ноты черники и шоколада',price:450,image:'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=300&h=300&fit=crop',cat:'coffee'},
+{id:202,name:'Almond Croissant',desc:'Свежий круассан с миндальным кремом',price:380,image:'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=300&h=300&fit=crop',cat:'bakery'}
+]},
+{id:3,name:'THE IRISH PUB',type:'Gastro Pub',cat:'pub',rating:4.7,time:'20-25',image:'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&h=600&fit=crop',menu:[
+{id:301,name:'Fish & Chips',desc:'Атлантическая треска в пивном кляре',price:680,image:'https://images.unsplash.com/photo-1579208030886-b1b5f0c4c49f?w=300&h=300&fit=crop',cat:'main'},
+{id:302,name:'Shepherd Pie',desc:'Традиционный пирог с ягнёнком',price:620,image:'https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=300&h=300&fit=crop',cat:'main'}
+]}
+];
+
+function getGreeting(){const h=new Date().getHours();return h<12?'Доброе утро':h<18?'Добрый день':'Добрый вечер'}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+function updateBadge(){const b=document.getElementById('cartBadge');const c=state.cart.reduce((s,i)=>s+i.qty,0);b.style.display=c>0?'flex':'none';b.textContent=c}
+
+function navigate(tab){
+state.tab=tab;
+document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+const scr=document.getElementById('screen-'+tab);
+const btn=document.querySelector(`.tab[data-tab="${tab}"]`);
+const renders={home:renderHome,voucher:renderVoucher,search:renderSearch,cart:renderCart,profile:renderProfile};
+scr.innerHTML=renders[tab]();
+scr.classList.add('active');
+btn.classList.add('active');
+scr.scrollTop=0;
+}
+
+function renderHome(){
+return`<div class="hero"><div class="hero-greeting">${getGreeting()},</div><div class="hero-name">${USER.name}</div></div>
+${state.activeVoucher?`<div class="voucher-card"><div class="voucher-badge">✈️ АКТИВНЫЙ ВАУЧЕР</div><div class="voucher-flight">Рейс ${state.activeVoucher.flight}</div><div class="voucher-info">${state.activeVoucher.type} · до ${state.activeVoucher.amount} ₽<br>Действителен до ${state.activeVoucher.valid}</div></div>`:''}
+<div class="section-header"><div class="section-title">Рестораны</div><div class="section-link">Все →</div></div>
+<div class="filter-bar">${['all','burgers','coffee','pub'].map(f=>`<div class="chip ${state.currentFilter===f?'active':''}" data-action="filter" data-filter="${f}">${f==='all'?'Все':f==='burgers'?'🍔 Бургеры':f==='coffee'?'☕ Кофе':'🍺 Паб'}</div>`).join('')}</div>
+<div class="restaurants-scroll">${getFiltered().map(r=>`<div class="restaurant-card" data-action="menu" data-id="${r.id}"><div class="rc-bg" style="background-image:url('${r.image}')"></div><div class="rc-overlay"></div><div class="rc-badge">⭐ ${r.rating}</div><div class="rc-content"><div class="rc-name">${r.name}</div><div class="rc-meta"><span>🕐 ${r.time} мин</span><span>📍 ${r.type}</span></div></div></div>`).join('')}</div>`}
+
+function getFiltered(){return state.currentFilter==='all'?RESTAURANTS:RESTAURANTS.filter(r=>r.cat===state.currentFilter)}
+
+function renderSearch(){
+return`<div class="search-container"><div class="search-title">Поиск</div><div class="search-subtitle">Найдите ресторан или блюдо</div></div>
+<div class="search-box"><span class="search-icon">🔍</span><input class="search-input" placeholder="Введите название..."></div>
+<div class="grid">${RESTAURANTS.map(r=>`<div class="card" data-action="menu" data-id="${r.id}"><div class="card-img" style="background-image:url('${r.image}')"></div><div class="card-body"><div class="card-title">${r.name}</div><div class="card-meta">⭐ ${r.rating} · ${r.type}</div></div></div>`).join('')}</div>`}
+
+function renderCart(){
+if(state.cart.length===0)return`<div style="text-align:center;padding:120px 28px"><div style="font-size:80px;margin-bottom:20px;opacity:0.3">🛒</div><div style="font-size:24px;font-weight:800;margin-bottom:8px">Корзина пуста</div><div style="font-size:15px;color:var(--text2)">Добавьте блюда из меню</div></div>`;
+const total=state.cart.reduce((s,i)=>s+i.price*i.qty,0);
+const discount=state.activeVoucher?state.activeVoucher.amount:0;
+const finalTotal=Math.max(0,total-discount);
+return`<div style="padding:32px 28px 24px"><div style="font-size:32px;font-weight:800">Корзина</div></div>
+${state.cart.map((item,i)=>`<div class="cart-item"><div class="cart-item-img" style="background-image:url('${item.image}')"></div><div class="cart-item-info"><div class="cart-item-name">${item.name}</div><div class="cart-item-controls"><button class="cart-btn" data-action="qty" data-i="${i}" data-d="-1">−</button><span class="cart-qty">${item.qty}</span><button class="cart-btn" data-action="qty" data-i="${i}" data-d="1">+</button></div></div><div class="cart-item-price">${item.price*item.qty} ₽</div></div>`).join('')}
+${state.activeVoucher?`<div style="margin:0 28px;padding:20px;background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:20px"><div style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-weight:700;margin-bottom:4px">✓ Ваучер применён</div><div style="font-size:13px;color:var(--text2)">Рейс ${state.activeVoucher.flight}</div></div><div style="font-size:24px;font-weight:800;color:var(--gold)">-${state.activeVoucher.amount} ₽</div></div></div>`:''}
+<div class="cart-summary"><div class="cart-row"><span>Сумма</span><span>${total} ₽</span></div>${state.activeVoucher?`<div class="cart-row" style="color:var(--gold)"><span>Скидка</span><span>-${discount} ₽</span></div>`:''}<div class="cart-row total"><span>Итого</span><span>${finalTotal} ₽</span></div><button class="btn-primary" data-action="checkout">Оплатить ${finalTotal} ₽</button></div>`}
+
+function renderProfile(){
+return`<div class="profile-header"><div class="profile-avatar">${USER.name[0]}</div><div class="profile-name">${USER.name}</div><div class="profile-phone">${USER.phone}</div></div>
+<div class="profile-stats"><div class="stat"><div class="stat-value">${USER.bonuses.toLocaleString()}</div><div class="stat-label">Бонусы</div></div><div class="stat"><div class="stat-value">${USER.orders}</div><div class="stat-label">Заказы</div></div><div class="stat"><div class="stat-value">4.9</div><div class="stat-label">Рейтинг</div></div></div>
+<div class="profile-section"><div class="profile-card"><h3>Другие прототипы</h3><a href="airport-staff.html" target="_blank" class="profile-link"><span>🏢</span><div><div style="font-weight:600">Кабинет сотрудника</div><div style="font-size:12px;color:var(--text3)">Управление ваучерами</div></div></a><a href="restaurant-admin.html" target="_blank" class="profile-link"><span>🍔</span><div><div style="font-weight:600">Админка ресторана</div><div style="font-size:12px;color:var(--text3)">Управление заказами</div></div></a></div></div>`}
+
+function renderVoucher(){
+return`<div class="voucher-form-container"><div class="voucher-title">Задержка рейса</div><div class="voucher-subtitle">Получите электронный ваучер на питание за пару секунд</div>
+<div class="form"><div class="form-group"><div class="form-label">Номер рейса</div><input class="form-input" id="flightNum" placeholder="Например: SU 1234"></div><div class="form-group"><div class="form-label">Номер билета</div><input class="form-input" id="ticketNum" placeholder="Например: 12A"></div><button class="btn-primary" data-action="voucher">Получить ваучер</button></div></div>`}
+
+function renderMenu(id){
+const r=RESTAURANTS.find(x=>x.id===id);
+if(!r)return'';
+const cats=[...new Set(r.menu.map(m=>m.cat))];
+return`<div class="menu-header"><div class="menu-back" data-action="back">←</div><div><div class="menu-title">${r.name}</div><div style="font-size:13px;color:var(--text2)">⭐ ${r.rating} · ${r.time} мин</div></div></div>
+<div class="menu-tabs">${cats.map(c=>`<div class="menu-tab">${c==='burgers'?'🍔':c==='coffee'?'☕':c==='bakery'?'🥐':'🍽️'} ${c}</div>`).join('')}</div>
+<div class="menu-items">${r.menu.map(m=>`<div class="menu-item"><div class="menu-item-img" style="background-image:url('${m.image}')"></div><div class="menu-item-info"><div class="menu-item-name">${m.name}</div><div class="menu-item-desc">${m.desc}</div><div class="menu-item-footer"><div class="menu-item-price">${m.price} ₽</div><div class="menu-item-add" data-action="add" data-id="${m.id}">+</div></div></div></div>`).join('')}</div>`}
+
+function initApp(){
+const splash=document.getElementById('splash');
+const ob=document.getElementById('onboarding');
+const slides=document.querySelectorAll('.onboarding-slide');
+const dots=document.querySelectorAll('.onboarding-dot');
+const btn=document.getElementById('obBtn');
+const progress=document.getElementById('obProgress');
+let current=0;
+
+function showSlide(n){
+slides.forEach((s,i)=>{s.classList.remove('active','prev');if(i<n)s.classList.add('prev');if(i===n)s.classList.add('active')});
+dots.forEach((d,i)=>d.classList.toggle('active',i===n));
+progress.style.width=((n+1)/slides.length*100)+'%';
+current=n;
+btn.textContent=n===slides.length-1?'Начать':'Продолжить';
+}
+
+btn.onclick=()=>{
+if(current<slides.length-1)showSlide(current+1);
+else{localStorage.setItem('onboarded','true');ob.classList.remove('active');setTimeout(()=>navigate('home'),300)}
+};
+
+setInterval(()=>{if(current<slides.length-1)showSlide(current+1)},5000);
+
+setTimeout(()=>{
+splash.classList.add('hidden');
+if(localStorage.getItem('onboarded')!=='true'){ob.classList.add('active')}
+else{setTimeout(()=>navigate('home'),300)}
+},2000);
+}
+
+document.getElementById('app').addEventListener('click',function(e){
+const el=e.target.closest('[data-action]');
+if(!el)return;
+const action=el.dataset.action;
+if(action==='filter'){state.currentFilter=el.dataset.filter;navigate('home')}
+else if(action==='menu'){document.getElementById('screen-menu').innerHTML=renderMenu(parseInt(el.dataset.id));document.getElementById('screen-menu').classList.add('active')}
+else if(action==='back'){document.getElementById('screen-menu').classList.remove('active')}
+else if(action==='add'){const id=parseInt(el.dataset.id);RESTAURANTS.forEach(r=>{const item=r.menu.find(m=>m.id===id);if(item){const existing=state.cart.find(c=>c.id===id);if(existing)existing.qty++;else state.cart.push({...item,qty:1});updateBadge();showToast('✓ Добавлено')}})}
+else if(action==='qty'){const i=parseInt(el.dataset.i);const d=parseInt(el.dataset.d);state.cart[i].qty+=d;if(state.cart[i].qty<=0)state.cart.splice(i,1);updateBadge();navigate('cart')}
+else if(action==='checkout'){showToast('✓ Заказ оформлен!');state.cart=[];updateBadge();navigate('home')}
+else if(action==='voucher'){const f=document.getElementById('flightNum').value;const t=document.getElementById('ticketNum').value;if(!f||!t){showToast('Заполните все поля');return}state.activeVoucher={flight:f.toUpperCase(),type:'Горячее питание',amount:800,valid:'16.04.2026 23:59'};showToast('✓ Ваучер получен!');navigate('home')}
+});
+
+document.querySelectorAll('.tab').forEach(t=>{t.onclick=()=>navigate(t.dataset.tab)});
+
+initApp();
+</script>
+</body>
+</html>
