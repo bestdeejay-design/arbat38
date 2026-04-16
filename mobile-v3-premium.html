@@ -315,15 +315,64 @@ let state={tab:'home',activeVoucher:null,cart:[],currentFilter:'all',obSlide:0};
 const RESTAURANTS=[
 {id:1,name:'BLACK STAR BURGER',type:'Premium Burgers',cat:'burgers',rating:4.9,time:'15-20',image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&h=600&fit=crop',menu:[
 {id:101,name:'Wagyu Burger',desc:'Мраморная говядина, трюфельный айоли, сыр грюйер',price:890,image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&h=300&fit=crop',cat:'burgers'},
-{id:102,name:'Truffle Fries',desc:'Картофель фри с трюфельным маслом и пармезаном',price:420,image:'https://images.unsplash.com/photo-1573080496219-bb0809865802?w=300&h=300&fit=crop',cat:'sides'}
+{id:102,name:'Black Star Double',desc:'Двойная котлета, бекон, соус BBQ',price:790,image:'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=300&h=300&fit=crop',cat:'burgers'},
+{id:103,name:'Truffle Fries',desc:'Картофель фри с трюфельным маслом',price:420,image:'https://images.unsplash.com/photo-1573080496219-bb0809865802?w=300&h=300&fit=crop',cat:'sides'}
 ]},
-{id:2,name:'COFFEEMANIA',type:'Artisan Coffee',cat:'coffee',rating:4.8,time:'10-15',image:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&h=600&fit=crop',menu:[
-{id:201,name:'Ethiopian Pour Over',desc:'Зерна из Иргачеффе, ноты черники и шоколада',price:450,image:'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=300&h=300&fit=crop',cat:'coffee'},
-{id:202,name:'Almond Croissant',desc:'Свежий круассан с миндальным кремом',price:380,image:'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=300&h=300&fit=crop',cat:'bakery'}
+{id:2,name:'THE IRISH BAR',type:'Gastro Pub',cat:'pub',rating:4.8,time:'20-25',image:'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&h=600&fit=crop',menu:[
+{id:201,name:'Fish & Chips',desc:'Атлантическая треска в пивном кляре',price:680,image:'https://images.unsplash.com/photo-1579208030886-b1b5f0c4c49f?w=300&h=300&fit=crop',cat:'main'},
+{id:202,name:'Ribeye Steak',desc:'Мраморная говядина, 300г',price:1890,image:'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=300&h=300&fit=crop',cat:'main'},
+{id:203,name:'Guinness Draught',desc:'Разливное, 0.5л',price:590,image:'https://images.unsplash.com/photo-1608270586620-248524c67de9?w=300&h=300&fit=crop',cat:'drinks'}
 ]},
-{id:3,name:'THE IRISH PUB',type:'Gastro Pub',cat:'pub',rating:4.7,time:'20-25',image:'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&h=600&fit=crop',menu:[
-{id:301,name:'Fish & Chips',desc:'Атлантическая треска в пивном кляре',price:680,image:'https://images.unsplash.com/photo-1579208030886-b1b5f0c4c49f?w=300&h=300&fit=crop',cat:'main'},
-{id:302,name:'Shepherd Pie',desc:'Традиционный пирог с ягнёнком',price:620,image:'https://images.unsplash.com/photo-1600891964599-f61ba0e24092?w=300&h=300&fit=crop',cat:'main'}
+{id:3,name:'BELUGA CAVIAR BAR',type:'Caviar & Champagne',cat:'luxury',rating:5.0,time:'25-30',image:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=600&fit=crop',menu:[
+{id:301,name:'Beluga Caviar 50g',desc:'Чёрная икра белуги, блины',price:8900,image:'https://images.unsplash.com/photo-1632778149955-e80f8ceca2e8?w=300&h=300&fit=crop',cat:'caviar'},
+{id:302,name:'Dom Pérignon 2013',desc:'Винтажное шампанское',price:24900,image:'https://images.unsplash.com/photo-1547595628-c61a29f496f0?w=300&h=300&fit=crop',cat:'champagne'}
+]},
+{id:4,name:'VASILCHUKI Chaihona 1',type:'Eastern Cuisine',cat:'eastern',rating:4.7,time:'25-30',image:'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=600&fit=crop',menu:[
+{id:401,name:'Плов узбекский',desc:'Баранина, рис, нут, морковь',price:790,image:'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=300&h=300&fit=crop',cat:'main'},
+{id:402,name:'Шашлык из баранины',desc:'Каре ягнёнка, 350г',price:1290,image:'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=300&h=300&fit=crop',cat:'main'},
+{id:403,name:'Облепиховый чай',desc:'С мёдом и имбирём, 600мл',price:550,image:'https://images.unsplash.com/photo-1597318181409-cf61ba0e24092?w=300&h=300&fit=crop',cat:'tea'}
+]},
+{id:5,name:'MO!BAR',type:'Cocktail Bar',cat:'bar',rating:4.9,time:'10-15',image:'https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=800&h=600&fit=crop',menu:[
+{id:501,name:'MO! Signature',desc:'Водка, личи, розмарин, лайм',price:690,image:'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=300&h=300&fit=crop',cat:'cocktails'},
+{id:502,name:'Espresso Martini',desc:'Водка, кофейный ликёр, эспрессо',price:650,image:'https://images.unsplash.com/photo-1583898350903-99fa829dad3d?w=300&h=300&fit=crop',cat:'cocktails'},
+{id:503,name:'Nachos Guacamole',desc:'Кукурузные чипсы, авокадо',price:490,image:'https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?w=300&h=300&fit=crop',cat:'snacks'}
+]},
+{id:6,name:'ABRAU-DURSO',type:'Wine Bar',cat:'wine',rating:4.8,time:'15-20',image:'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=800&h=600&fit=crop',menu:[
+{id:601,name:'Abrau Brut',desc:'Игристое, Краснодарский край',price:590,image:'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=300&h=300&fit=crop',cat:'wine'},
+{id:602,name:'Pinot Noir Reserve',desc:'Красное сухое',price:790,image:'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=300&h=300&fit=crop',cat:'wine'},
+{id:603,name:'Cheese Platter',desc:'Бри, камамбер, пармезан',price:1290,image:'https://images.unsplash.com/photo-1452195100486-9cc805987862?w=300&h=300&fit=crop',cat:'snacks'}
+]},
+{id:7,name:'SIBERIAN TALES',type:'Russian Cuisine',cat:'russian',rating:4.6,time:'20-25',image:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop',menu:[
+{id:701,name:'Пельмени сибирские',desc:'Говядина и свинина, сметана',price:590,image:'https://images.unsplash.com/photo-1587389225591-80e7eb8e68ac?w=300&h=300&fit=crop',cat:'main'},
+{id:702,name:'Борщ',desc:'С говядиной и сметаной',price:490,image:'https://images.unsplash.com/photo-1603105037880-880cd4f9b9d3?w=300&h=300&fit=crop',cat:'soup'},
+{id:703,name:'Блины с икрой',desc:'Тонкие блины, красная икра',price:890,image:'https://images.unsplash.com/photo-1590301157890-4810e6cdc07a?w=300&h=300&fit=crop',cat:'main'}
+]},
+{id:8,name:'BURGER HEROES',type:'Gourmet Burgers',cat:'burgers',rating:4.7,time:'15-20',image:'https://images.unsplash.com/photo-1550547660-d9450f859349?w=800&h=600&fit=crop',menu:[
+{id:801,name:'Hero Burger',desc:'Ангус, бекон, чеддер, халапеньо',price:790,image:'https://images.unsplash.com/photo-1550547660-d9450f859349?w=300&h=300&fit=crop',cat:'burgers'},
+{id:802,name:'Veggie Hero',desc:'Котлета из нута, авокадо',price:590,image:'https://images.unsplash.com/photo-1520072959219-c595e6cdc07a?w=300&h=300&fit=crop',cat:'burgers'},
+{id:803,name:'Sweet Potato Fries',desc:'Батат фри с соусом',price:390,image:'https://images.unsplash.com/photo-1529589510304-b7e994444351?w=300&h=300&fit=crop',cat:'sides'}
+]},
+{id:9,name:'STARS COFFEE',type:'Artisan Coffee',cat:'coffee',rating:4.8,time:'10-15',image:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&h=600&fit=crop',menu:[
+{id:901,name:'Cappuccino',desc:'Арабика, молоко, 300мл',price:350,image:'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=300&h=300&fit=crop',cat:'coffee'},
+{id:902,name:'Flat White',desc:'Двойной эспрессо, молоко',price:390,image:'https://images.unsplash.com/photo-1611564494260-6f21b80af7ea?w=300&h=300&fit=crop',cat:'coffee'},
+{id:903,name:'Croissant',desc:'Классический, сливочное масло',price:290,image:'https://images.unsplash.com/photo-1555507036-ab1f4038024a?w=300&h=300&fit=crop',cat:'bakery'}
+]},
+{id:10,name:'PRO.ХАЧАПУРИ',type:'Georgian Cuisine',cat:'georgian',rating:4.7,time:'20-25',image:'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800&h=600&fit=crop',menu:[
+{id:1001,name:'Хачапури по-аджарски',desc:'Лодочка, сулугуни, яйцо',price:590,image:'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=300&h=300&fit=crop',cat:'khachapuri'},
+{id:1002,name:'Хинкали с бараниной',desc:'5 штук, мясной бульон',price:490,image:'https://images.unsplash.com/photo-1625944525533-473f1a3d54e7?w=300&h=300&fit=crop',cat:'khinkali'},
+{id:1003,name:'Хачапури по-мегрельски',desc:'Двойной сыр, сулугуни',price:490,image:'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&h=300&fit=crop',cat:'khachapuri'}
+]},
+{id:11,name:'ГОСПОДА УДАЧИ',type:'Fine Dining',cat:'fine',rating:4.9,time:'30-35',image:'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&h=600&fit=crop',menu:[
+{id:1101,name:'Каре ягнёнка',desc:'С розмарином и чесноком, 400г',price:1690,image:'https://images.unsplash.com/photo-1544025162-d76694265947?w=300&h=300&fit=crop',cat:'main'},
+{id:1102,name:'Форель на гриле',desc:'Целая, с лимоном и травами',price:1290,image:'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=300&h=300&fit=crop',cat:'main'}
+]},
+{id:12,name:'SMOKING LOUNGE',type:'Premium Lounge',cat:'lounge',rating:4.5,time:'5-10',image:'https://images.unsplash.com/photo-1545158535-c3f7168c28b6?w=800&h=600&fit=crop',menu:[
+{id:1201,name:'Кальян классический',desc:'Табак на выбор, 60 мин',price:1500,image:'https://images.unsplash.com/photo-1545158535-c3f7168c28b6?w=300&h=300&fit=crop',cat:'hookah'},
+{id:1202,name:'Чай премиум',desc:'Китайский чай, заварник',price:690,image:'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=300&h=300&fit=crop',cat:'tea'}
+]},
+{id:13,name:'ВКУСНЫЙ БУФЕТ',type:'Buffet',cat:'buffet',rating:4.4,time:'10-15',image:'https://images.unsplash.com/photo-1567521464027-f127ff144326?w=800&h=600&fit=crop',menu:[
+{id:1301,name:'Завтрак шведский стол',desc:'Яйца, каши, выпечка, напитки',price:890,image:'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=300&h=300&fit=crop',cat:'breakfast'},
+{id:1302,name:'Бизнес-ланч',desc:'Салат, суп, горячее, напиток',price:690,image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=300&fit=crop',cat:'lunch'}
 ]}
 ];
 
