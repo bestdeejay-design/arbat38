@@ -55,6 +55,8 @@ input{border:none;background:none;color:inherit;font:inherit;outline:none}
 .splash-logo-ring::before{content:'';position:absolute;inset:10px;border:2px solid rgba(212,175,55,0.2);border-radius:50%}
 .splash-logo-inner{position:absolute;inset:20px;background:linear-gradient(135deg,rgba(212,175,55,0.2),rgba(212,175,55,0.05));border-radius:50%;display:flex;align-items:center;justify-content:center;animation:glow 3s ease-in-out infinite}
 .splash-logo-inner svg{width:80px;height:80px}
+.splash-plane{position:absolute;top:15%;left:-100px;font-size:40px;opacity:0.3;animation:flyPlane 8s ease-in-out infinite}
+@keyframes flyPlane{0%{left:-100px;top:20%;opacity:0}10%{opacity:0.3}90%{opacity:0.3}100%{left:calc(100% + 100px);top:10%;opacity:0}}
 .splash-brand{font-size:32px;font-weight:700;letter-spacing:6px;background:linear-gradient(135deg,var(--gold),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
 .splash-tagline{font-size:12px;color:var(--text3);letter-spacing:4px;text-transform:uppercase}
 .splash-loader{margin-top:48px;width:200px;height:2px;background:var(--glass);border-radius:2px;overflow:hidden}
@@ -234,6 +236,7 @@ input{border:none;background:none;color:inherit;font:inherit;outline:none}
 
 <div id="splash">
 <div class="splash-bg"></div>
+<div class="splash-plane">✈️</div>
 <div class="splash-content">
 <div class="splash-logo-wrap">
 <div class="splash-logo-ring"></div>
