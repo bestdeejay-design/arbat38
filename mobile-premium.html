@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0A1128">
+    <title>Arbat 38 - Premium Airport Experience</title>
+    <style>
+/* ===== RESET ===== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,sans-serif;background:#0A1128;color:#fff;overflow:hidden;height:100dvh;display:flex;justify-content:center}
+a{color:inherit;text-decoration:none}
+button{border:none;background:none;color:inherit;font:inherit;cursor:pointer}
+input{border:none;background:none;color:inherit;font:inherit;outline:none}
+::-webkit-scrollbar{display:none}
+
+/* ===== PREMIUM VARS ===== */
+:root{
+  --bg-deep:#0A1128;
+  --bg-dark:#1A1A1A;
+  --bg-card:#2A2420;
+  --gold:#C6A43F;
+  --gold-light:#D4B85C;
+  --brass:#B58B3D;
+  --brown-dark:#3E2723;
+  --white:#FFFFFF;
+  --text-muted:rgba(255,255,255,0.6);
+  --text-dim:rgba(255,255,255,0.4);
+  --gold-dim:rgba(198,164,63,0.15);
+  --gold-border:rgba(198,164,63,0.3);
+  --radius-sm:12px;
+  --radius:20px;
+  --radius-lg:24px;
+  --tab-h:70px;
+  --shadow:0 8px 32px rgba(0,0,0,0.4);
+  --shadow-gold:0 4px 20px rgba(198,164,63,0.3);
+}
+
+/* ===== APP ===== */
+#app{width:100%;max-width:430px;height:100dvh;background:var(--bg-deep);position:relative;overflow:hidden}
+
+/* ===== SPLASH ===== */
+#splash{position:absolute;inset:0;z-index:100;background:linear-gradient(135deg,#0A1128 0%,#1A1A2E 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .8s,visibility .8s}
+#splash.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.splash-logo{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,rgba(198,164,63,0.1),rgba(198,164,63,0.05));display:flex;align-items:center;justify-content:center;border:2px solid var(--gold-border);margin-bottom:24px;box-shadow:var(--shadow-gold)}
+.splash-text{color:var(--gold);font-size:11px;letter-spacing:6px;text-transform:uppercase;font-weight:400}
+
+/* ===== SCREENS ===== */
+.screen{position:absolute;top:0;left:0;right:0;bottom:calc(var(--tab-h) + env(safe-area-inset-bottom));overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;opacity:0;visibility:hidden;transition:opacity .4s;padding-bottom:100px}
+.screen.active{opacity:1;visibility:visible}
+
+/* ===== TAB BAR ===== */
+#tab-bar{position:absolute;bottom:0;left:0;right:0;height:calc(var(--tab-h) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:rgba(10,17,40,0.95);backdrop-filter:blur(20px);border-top:1px solid rgba(198,164,63,0.2);display:flex;align-items:center;justify-content:space-around;z-index:50}
+.tab-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 12px;border-radius:16px;transition:all .3s;min-width:56px}
+.tab-btn.active{background:var(--gold-dim)}
+.tab-btn svg{width:24px;height:24px}
+.tab-btn span{font-size:10px;letter-spacing:.5px;color:var(--text-dim);font-weight:500;transition:color .3s}
+.tab-btn.active span{color:var(--gold)}
+.tab-btn svg path,.tab-btn svg circle,.tab-btn svg rect,.tab-btn svg line{stroke:var(--text-dim);transition:stroke .3s}
+.tab-btn.active svg path,.tab-btn.active svg circle,.tab-btn.active svg rect,.tab-btn.active svg line{stroke:var(--gold)}
+
+/* ===== COMMON ===== */
+.section-title{font-size:18px;font-weight:600;letter-spacing:1px;color:var(--white);padding:0 24px;margin-bottom:20px}
+.section-subtitle{font-size:13px;color:var(--text-muted);padding:0 24px;margin-bottom:24px}
+
+/* ===== ONBOARDING ===== */
+.onboarding{position:absolute;inset:0;z-index:90;background:linear-gradient(135deg,#0A1128 0%,#1A1A2E 100%);display:flex;flex-direction:column}
+.onboarding.hidden{display:none}
+.onboarding-slides{flex:1;display:flex;overflow-x:auto;scroll-snap-type:x mandatory}
+.onboarding-slide{flex:0 0 100%;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center}
+.onboarding-image{width:280px;height:280px;border-radius:var(--radius-lg);background:linear-gradient(135deg,rgba(198,164,63,0.2),rgba(198,164,63,0.05));border:1px solid var(--gold-border);margin-bottom:40px;display:flex;align-items:center;justify-content:center;font-size:80px;box-shadow:var(--shadow-gold)}
+.onboarding-title{font-size:28px;font-weight:600;margin-bottom:12px;letter-spacing:.5px}
+.onboarding-sub{font-size:15px;color:var(--text-muted);line-height:1.6;max-width:300px}
+.onboarding-dots{display:flex;gap:8px;justify-content:center;margin:40px 0}
+.onboarding-dot{width:8px;height:8px;border-radius:50%;background:var(--text-dim);transition:all .3s}
+.onboarding-dot.active{width:24px;background:var(--gold);border-radius:4px}
+.onboarding-btn{padding:18px 48px;background:linear-gradient(135deg,var(--gold),var(--brass));color:#000;border-radius:var(--radius-sm);font-size:15px;font-weight:600;letter-spacing:1px;margin:0 40px 60px;box-shadow:var(--shadow-gold)}
+
+/* ===== HERO SECTION ===== */
+.hero{padding:32px 24px 24px;background:linear-gradient(180deg,rgba(198,164,63,0.1) 0%,transparent 100%)}
+.hero-greeting{font-size:14px;color:var(--text-muted);font-weight:400;letter-spacing:1px;margin-bottom:8px}
+.hero-name{font-size:32px;font-weight:600;letter-spacing:-.5px;margin-bottom:20px}
+
+/* ===== VOUCHER CARD ===== */
+.voucher-card{margin:0 24px 24px;padding:24px;border-radius:var(--radius);background:linear-gradient(135deg,rgba(198,164,63,0.15),rgba(198,164,63,0.05));border:2px solid var(--gold-border);box-shadow:var(--shadow-gold);position:relative;overflow:hidden}
+.voucher-card::before{content:'';position:absolute;top:-50%;right:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(198,164,63,0.1) 0%,transparent 70%);pointer-events:none}
+.voucher-badge{display:inline-block;padding:6px 12px;background:var(--gold);color:#000;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:1px;margin-bottom:12px}
+.voucher-flight{font-size:24px;font-weight:600;margin-bottom:8px}
+.voucher-info{font-size:13px;color:var(--text-muted);line-height:1.6}
+
+/* ===== FILTER CHIPS ===== */
+.filter-bar{display:flex;gap:10px;overflow-x:auto;padding:0 24px 24px}
+.filter-chip{padding:10px 18px;border-radius:24px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);font-size:12px;font-weight:500;white-space:nowrap;transition:all .3s}
+.filter-chip.active{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
+
+/* ===== RESTAURANT CARDS ===== */
+.restaurants-scroll{display:flex;gap:16px;overflow-x:auto;padding:0 24px 32px;scroll-snap-type:x mandatory}
+.restaurant-card{flex:0 0 85%;scroll-snap-align:start;border-radius:var(--radius);overflow:hidden;background:var(--bg-card);box-shadow:var(--shadow);transition:transform .3s}
+.restaurant-card:active{transform:scale(0.98)}
+.restaurant-card .rc-img{width:100%;height:200px;background-size:cover;background-position:center;position:relative}
+.restaurant-card .rc-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.8) 0%,transparent 50%)}
+.restaurant-card .rc-content{padding:20px}
+.restaurant-card .rc-name{font-size:18px;font-weight:600;margin-bottom:8px}
+.restaurant-card .rc-meta{display:flex;gap:16px;font-size:12px;color:var(--text-muted)}
+.restaurant-card .rc-meta span{display:flex;align-items:center;gap:4px}
+
+/* ===== VOUCHER SCREEN ===== */
+.voucher-screen{padding:32px 24px}
+.voucher-prompt{text-align:center;margin-bottom:40px}
+.voucher-prompt h1{font-size:28px;font-weight:600;margin-bottom:12px;background:linear-gradient(135deg,var(--gold),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.voucher-prompt p{font-size:14px;color:var(--text-muted);line-height:1.6}
+.voucher-form{background:var(--bg-card);padding:24px;border-radius:var(--radius);margin-bottom:24px}
+.form-field{margin-bottom:20px}
+.form-field label{display:block;font-size:12px;color:var(--text-muted);margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase}
+.form-field input{width:100%;padding:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:var(--radius-sm);font-size:15px;color:var(--white);transition:border-color .3s}
+.form-field input:focus{border-color:var(--gold)}
+.form-field input::placeholder{color:var(--text-dim)}
+.btn-gradient{width:100%;padding:18px;background:linear-gradient(135deg,var(--gold),var(--brass));color:#000;border-radius:var(--radius-sm);font-size:15px;font-weight:600;letter-spacing:1px;box-shadow:var(--shadow-gold);transition:transform .2s}
+.btn-gradient:active{transform:scale(0.98)}
+
+/* ===== QR DISPLAY ===== */
+.qr-display{text-align:center;padding:32px 24px}
+.qr-card{background:#fff;padding:24px;border-radius:var(--radius);display:inline-block;margin:24px 0;box-shadow:var(--shadow)}
+.qr-info{background:var(--bg-card);padding:24px;border-radius:var(--radius);margin-top:24px}
+.qr-type{font-size:28px;font-weight:600;color:var(--gold-light);margin-bottom:16px}
+.qr-details{font-size:14px;color:var(--text-muted);line-height:1.8}
+
+/* ===== PROFILE ===== */
+.profile-header{padding:40px 24px 32px;text-align:center;background:linear-gradient(180deg,rgba(198,164,63,0.1) 0%,transparent 100%)}
+.profile-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--brass));display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:600;color:#000;margin:0 auto 16px;box-shadow:var(--shadow-gold)}
+.profile-name{font-size:24px;font-weight:600;margin-bottom:4px}
+.profile-phone{font-size:13px;color:var(--text-muted)}
+
+/* ===== CART ===== */
+.cart-item{display:flex;gap:16px;padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.cart-item-img{width:70px;height:70px;border-radius:var(--radius-sm);background-size:cover;background-position:center;flex-shrink:0}
+.cart-item-info{flex:1}
+.cart-item-name{font-size:15px;font-weight:500;margin-bottom:6px}
+.cart-item-price{font-size:16px;font-weight:600;color:var(--gold)}
+.cart-summary{padding:24px;background:var(--bg-card);margin:24px;border-radius:var(--radius)}
+.cart-row{display:flex;justify-content:space-between;margin-bottom:12px;font-size:14px}
+.cart-row.total{font-size:18px;font-weight:600;color:var(--gold);padding-top:16px;border-top:1px solid var(--gold-border)}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-100px);background:linear-gradient(135deg,var(--gold),var(--brass));color:#000;padding:14px 28px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;z-index:200;transition:transform .4s ease;pointer-events:none;box-shadow:var(--shadow-gold)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- SPLASH -->
+  <div id="splash">
+    <div class="splash-logo">✈️</div>
+    <div class="splash-text">Arbat 38</div>
+  </div>
+
+  <!-- ONBOARDING -->
+  <div class="onboarding hidden" id="onboarding">
+    <div class="onboarding-slides">
+      <div class="onboarding-slide">
+        <div class="onboarding-image">🛋️</div>
+        <div class="onboarding-title">Ваша личная гостиная в аэропорту</div>
+        <div class="onboarding-sub">Заказывайте еду из любых ресторанов и получайте ваучеры по задержкам рейсов</div>
+      </div>
+      <div class="onboarding-slide">
+        <div class="onboarding-image">🍽️</div>
+        <div class="onboarding-title">Еда, которая ждёт именно вас</div>
+        <div class="onboarding-sub">Делайте предзаказ и не теряйте времени</div>
+      </div>
+      <div class="onboarding-slide">
+        <div class="onboarding-image">🎫</div>
+        <div class="onboarding-title">Ваш ключ к комфорту</div>
+        <div class="onboarding-sub">Получайте ваучеры за пару секунд</div>
+      </div>
+    </div>
+    <div class="onboarding-dots">
+      <div class="onboarding-dot active"></div>
+      <div class="onboarding-dot"></div>
+      <div class="onboarding-dot"></div>
+    </div>
+    <button class="onboarding-btn" data-action="finish-onboarding">Начать</button>
+  </div>
+
+  <!-- SCREEN: Voucher -->
+  <div id="screen-voucher" class="screen">
+    <div class="voucher-screen">
+      <div class="voucher-prompt">
+        <h1>У меня задержка рейса</h1>
+        <p>Введите данные рейса для получения электронного ваучера на питание</p>
+      </div>
+      <div class="voucher-form" id="voucherForm">
+        <div class="form-field">
+          <label>Номер рейса</label>
+          <input type="text" id="flightNumber" placeholder="Например: SU 1234">
+        </div>
+        <div class="form-field">
+          <label>Номер билета</label>
+          <input type="text" id="ticketNumber" placeholder="Например: 12A">
+        </div>
+        <button class="btn-gradient" data-action="get-voucher">Получить ваучер</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: Home -->
+  <div id="screen-home" class="screen"></div>
+
+  <!-- SCREEN: Restaurants -->
+  <div id="screen-restaurants" class="screen"></div>
+
+  <!-- SCREEN: Cart -->
+  <div id="screen-cart" class="screen"></div>
+
+  <!-- SCREEN: Profile -->
+  <div id="screen-profile" class="screen"></div>
+
+  <!-- TAB BAR -->
+  <div id="tab-bar">
+    <button class="tab-btn active" data-action="navigate" data-tab="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      <span>Главная</span>
+    </button>
+    <button class="tab-btn" data-action="navigate" data-tab="voucher">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>
+      <span>Ваучеры</span>
+    </button>
+    <button class="tab-btn" data-action="navigate" data-tab="restaurants">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span>Поиск</span>
+    </button>
+    <button class="tab-btn" data-action="navigate" data-tab="cart">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+      <span>Корзина</span>
+    </button>
+    <button class="tab-btn" data-action="navigate" data-tab="profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M20 21c0-4.42-3.58-8-8-8s-8 3.58-8 8"/></svg>
+      <span>Профиль</span>
+    </button>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+// ===== DATA =====
+const USER = { name:'Михаил', phone:'+7 (999) 123-45-67', bonuses:3723, orders:4 };
+let activeVoucher = null;
+let cart = [];
+
+const RESTAURANTS = [
+  { id:1, name:'BLACK STAR BURGER', type:'Бургеры', rating:4.5, time:'15-20 мин', image:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&h=400&fit=crop' },
+  { id:2, name:'MO!BAR', type:'Бар', rating:4.7, time:'10-15 мин', image:'https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600&h=400&fit=crop' },
+  { id:3, name:'THE IRISH BAR', type:'Паб', rating:4.6, time:'20-25 мин', image:'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=600&h=400&fit=crop' }
+];
+
+// ===== STATE =====
+const state = { tab:'home', onboarded:localStorage.getItem('onboarded')==='true' };
+
+// ===== RENDER FUNCTIONS =====
+function renderHome() {
+  return `
+    <div class="hero">
+      <div class="hero-greeting">${getGreeting()},</div>
+      <div class="hero-name">${USER.name}</div>
+    </div>
+
+    ${activeVoucher ? `
+    <div class="voucher-card">
+      <div class="voucher-badge">АКТИВНЫЙ ВАУЧЕР</div>
+      <div class="voucher-flight">Рейс ${activeVoucher.flight}</div>
+      <div class="voucher-info">${activeVoucher.type} · до ${activeVoucher.amount} ₽<br>Действителен до ${activeVoucher.valid}</div>
+    </div>
+    ` : ''}
+
+    <div class="section-title">Рестораны-партнёры</div>
+    <div class="filter-bar">
+      <div class="filter-chip active">Все</div>
+      <div class="filter-chip">🍳 Завтраки</div>
+      <div class="filter-chip">☕ Кофе с собой</div>
+      <div class="filter-chip">🥂 Бизнес-лаунж</div>
+    </div>
+
+    <div class="restaurants-scroll">
+      ${RESTAURANTS.map(r => `
+        <div class="restaurant-card">
+          <div class="rc-img" style="background-image:url('${r.image}')">
+            <div class="rc-overlay"></div>
+          </div>
+          <div class="rc-content">
+            <div class="rc-name">${r.name}</div>
+            <div class="rc-meta">
+              <span>⭐ ${r.rating}</span>
+              <span>🕐 ${r.time}</span>
+              <span>📍 ${r.type}</span>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderRestaurants() {
+  return `
+    <div style="padding:32px 24px 24px">
+      <h1 style="font-size:28px;font-weight:600;margin-bottom:8px">Рестораны</h1>
+      <p style="font-size:14px;color:var(--text-muted)">Выберите ресторан для предзаказа</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;padding:0 24px">
+      ${RESTAURANTS.map(r => `
+        <div class="restaurant-card" style="flex:1">
+          <div class="rc-img" style="background-image:url('${r.image}');height:180px">
+            <div class="rc-overlay"></div>
+          </div>
+          <div class="rc-content">
+            <div class="rc-name">${r.name}</div>
+            <div class="rc-meta">
+              <span>⭐ ${r.rating}</span>
+              <span>🕐 ${r.time}</span>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderCart() {
+  if (cart.length === 0) {
+    return `
+      <div style="padding:80px 24px;text-align:center">
+        <div style="font-size:64px;margin-bottom:20px">🛒</div>
+        <h2 style="font-size:20px;font-weight:600;margin-bottom:12px">Корзина пуста</h2>
+        <p style="font-size:14px;color:var(--text-muted)">Добавьте блюда из меню</p>
+      </div>
+    `;
+  }
+  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  return `
+    <div style="padding:32px 24px 24px">
+      <h1 style="font-size:28px;font-weight:600">Корзина</h1>
+    </div>
+    ${cart.map((item, i) => `
+      <div class="cart-item">
+        <div class="cart-item-img" style="background-image:url('${item.image}')"></div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${item.name}</div>
+          <div style="font-size:12px;color:var(--text-muted)">Кол-во: ${item.qty}</div>
+        </div>
+        <div class="cart-item-price">${item.price * item.qty} ₽</div>
+      </div>
+    `).join('')}
+    <div class="cart-summary">
+      <div class="cart-row"><span>Сумма</span><span>${total} ₽</span></div>
+      ${activeVoucher ? `<div class="cart-row" style="color:var(--gold)"><span>Ваучер</span><span>-${activeVoucher.amount} ₽</span></div>` : ''}
+      <div class="cart-row total"><span>Итого</span><span>${activeVoucher ? total - activeVoucher.amount : total} ₽</span></div>
+      <button class="btn-gradient" style="margin-top:20px">Оплатить</button>
+    </div>
+  `;
+}
+
+function renderProfile() {
+  return `
+    <div class="profile-header">
+      <div class="profile-avatar">${USER.name[0]}</div>
+      <div class="profile-name">${USER.name}</div>
+      <div class="profile-phone">${USER.phone}</div>
+    </div>
+    <div style="padding:0 24px">
+      <div style="background:var(--bg-card);padding:24px;border-radius:var(--radius);margin-bottom:16px">
+        <div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Бонусы</div>
+        <div style="font-size:36px;font-weight:600;color:var(--gold)">${USER.bonuses.toLocaleString()}</div>
+      </div>
+      <div style="background:var(--bg-card);padding:20px;border-radius:var(--radius)">
+        <div style="font-size:15px;font-weight:500;margin-bottom:12px">Другие прототипы</div>
+        <a href="airport-staff.html" target="_blank" style="display:block;padding:14px;background:rgba(255,255,255,0.05);border-radius:12px;margin-bottom:8px">🏢 Кабинет сотрудника аэропорта</a>
+        <a href="restaurant-admin.html" target="_blank" style="display:block;padding:14px;background:rgba(255,255,255,0.05);border-radius:12px">🍔 Админка ресторана</a>
+      </div>
+    </div>
+  `;
+}
+
+// ===== HELPERS =====
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Доброе утро';
+  if (h < 18) return 'Добрый день';
+  return 'Добрый вечер';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ===== NAVIGATION =====
+function navigate(tab) {
+  state.tab = tab;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const scr = document.getElementById('screen-' + tab);
+  const btn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+  switch(tab) {
+    case 'home': scr.innerHTML = renderHome(); break;
+    case 'restaurants': scr.innerHTML = renderRestaurants(); break;
+    case 'cart': scr.innerHTML = renderCart(); break;
+    case 'profile': scr.innerHTML = renderProfile(); break;
+  }
+  scr.classList.add('active');
+  if (btn) btn.classList.add('active');
+  scr.scrollTop = 0;
+}
+
+// ===== EVENTS =====
+document.getElementById('app').addEventListener('click', function(e) {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const action = el.dataset.action;
+
+  if (action === 'navigate') navigate(el.dataset.tab);
+  else if (action === 'finish-onboarding') {
+    localStorage.setItem('onboarded', 'true');
+    document.getElementById('onboarding').classList.add('hidden');
+    navigate('home');
+  }
+  else if (action === 'get-voucher') {
+    const flight = document.getElementById('flightNumber').value;
+    const ticket = document.getElementById('ticketNumber').value;
+    if (!flight || !ticket) { showToast('Заполните все поля'); return; }
+    activeVoucher = { flight: flight.toUpperCase(), type:'Горячее питание', amount:500, valid:'16.04.2026 23:59' };
+    showToast('Ваучер получен!');
+    navigate('home');
+  }
+});
+
+// ===== INIT =====
+setTimeout(() => {
+  document.getElementById('splash').classList.add('hidden');
+  if (!state.onboarded) {
+    document.getElementById('onboarding').classList.remove('hidden');
+  } else {
+    navigate('home');
+  }
+}, 1500);
+</script>
+</body>
+</html>

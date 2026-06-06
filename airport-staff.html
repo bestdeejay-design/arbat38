@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arbat 38 - Кабинет сотрудника аэропорта</title>
+    <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0a0a0a;
+    color: #fff;
+    min-height: 100vh;
+}
+
+:root {
+    --gold: #aa9570;
+    --gold-light: #c4ad8a;
+    --gold-dim: rgba(170,149,112,0.15);
+    --gold-border: rgba(170,149,112,0.25);
+    --bg: #0a0a0a;
+    --bg2: #141414;
+    --bg3: #1c1c1c;
+    --text2: #999;
+    --text3: #555;
+}
+
+/* Layout */
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 260px;
+    background: var(--bg2);
+    border-right: 1px solid #1a1a1a;
+    padding: 24px 0;
+}
+
+.logo {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid #1a1a1a;
+    margin-bottom: 24px;
+}
+
+.logo h1 {
+    font-size: 20px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    color: var(--gold);
+}
+
+.logo p {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 4px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.nav-menu {
+    list-style: none;
+}
+
+.nav-item {
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    border-left: 3px solid transparent;
+}
+
+.nav-item:hover {
+    background: var(--gold-dim);
+    border-left-color: var(--gold);
+    color: var(--gold-light);
+}
+
+.nav-item.active {
+    background: var(--gold-dim);
+    border-left-color: var(--gold);
+    color: var(--gold);
+}
+
+.main-content {
+    flex: 1;
+    padding: 32px;
+    overflow-y: auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #1a1a1a;
+}
+
+.header h2 {
+    font-size: 24px;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--text2);
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--gold-dim);
+    border: 1px solid var(--gold-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    font-weight: 500;
+}
+
+/* Stats Cards */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.stat-card {
+    background: var(--bg2);
+    border: 1px solid #1e1e1e;
+    border-radius: 14px;
+    padding: 24px;
+}
+
+.stat-card .label {
+    font-size: 11px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+}
+
+.stat-card .value {
+    font-size: 36px;
+    font-weight: 200;
+    color: var(--gold-light);
+    margin-bottom: 8px;
+}
+
+.stat-card .sub {
+    font-size: 12px;
+    color: var(--text2);
+}
+
+/* Forms */
+.form-section {
+    background: var(--bg2);
+    border: 1px solid #1e1e1e;
+    border-radius: 14px;
+    padding: 32px;
+    margin-bottom: 32px;
+}
+
+.form-section h3 {
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    margin-bottom: 24px;
+    color: var(--gold);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 11px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--bg3);
+    border: 1px solid #1e1e1e;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--gold);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.btn {
+    padding: 14px 32px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: var(--gold);
+    color: #000;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid var(--gold-border);
+    color: var(--gold);
+}
+
+.btn-secondary:hover {
+    background: var(--gold-dim);
+}
+
+/* Table */
+.table-container {
+    background: var(--bg2);
+    border: 1px solid #1e1e1e;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.table-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #1a1a1a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-header h3 {
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 1px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: var(--bg3);
+}
+
+th {
+    padding: 16px 24px;
+    text-align: left;
+    font-size: 11px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 500;
+}
+
+td {
+    padding: 16px 24px;
+    font-size: 13px;
+    border-bottom: 1px solid #151515;
+}
+
+tr:hover {
+    background: var(--gold-dim);
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+.badge-active {
+    background: rgba(76, 175, 80, 0.15);
+    color: #4CAF50;
+}
+
+.badge-completed {
+    background: rgba(158, 158, 158, 0.15);
+    color: #9E9E9E;
+}
+
+.badge-water {
+    background: rgba(33, 150, 243, 0.15);
+    color: #2196F3;
+}
+
+.badge-food {
+    background: rgba(255, 152, 0, 0.15);
+    color: #FF9800;
+}
+
+/* QR Display */
+.qr-display {
+    text-align: center;
+    padding: 40px;
+    background: var(--bg2);
+    border: 1px solid #1e1e1e;
+    border-radius: 14px;
+    margin-bottom: 32px;
+}
+
+.qr-display h3 {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 24px;
+}
+
+.qr-code {
+    background: #fff;
+    padding: 20px;
+    border-radius: 14px;
+    display: inline-block;
+    margin: 20px 0;
+}
+
+.qr-info {
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.8;
+}
+
+/* Toast */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--gold);
+    color: #000;
+    padding: 16px 24px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 1000;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--bg2);
+    border: 1px solid var(--gold-border);
+    border-radius: 14px;
+    padding: 32px;
+    max-width: 500px;
+    width: 90%;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.modal-header h3 {
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.close-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #2a2a2a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text3);
+    font-size: 18px;
+}
+
+.close-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.actions .btn {
+    flex: 1;
+}
+
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .layout {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #1a1a1a;
+    }
+    
+    .main-content {
+        padding: 20px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">
+            <h1>ARBAT 38</h1>
+            <p>Аэропорт SVO</p>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item active" data-page="dashboard">📊 Дашборд</li>
+            <li class="nav-item" data-page="create-voucher">🎫 Создать ваучеры</li>
+            <li class="nav-item" data-page="active-flights">✈️ Активные рейсы</li>
+            <li class="nav-item" data-page="statistics">📈 Статистика</li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="header">
+            <h2 id="page-title">Дашборд</h2>
+            <div class="user-info">
+                <div>
+                    <div style="font-weight: 500; color: #fff;">Иванов И.И.</div>
+                    <div>Сотрудник аэропорта</div>
+                </div>
+                <div class="user-avatar">ИИ</div>
+            </div>
+        </div>
+
+        <!-- Dashboard Page -->
+        <div id="page-dashboard">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="label">Активных рейсов</div>
+                    <div class="value" id="stat-active-flights">5</div>
+                    <div class="sub">С задержкой более 2 часов</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Ваучеров выдано сегодня</div>
+                    <div class="value" id="stat-vouchers-today">147</div>
+                    <div class="sub">+23% к вчерашнему дню</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Использовано ваучеров</div>
+                    <div class="value" id="stat-vouchers-used">98</div>
+                    <div class="sub">66% от выданных</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Пассажиров обслужено</div>
+                    <div class="value" id="stat-passengers">234</div>
+                    <div class="sub">За последние 24 часа</div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Последние активации</h3>
+                    <button class="btn btn-secondary" onclick="navigate('active-flights')">Все рейсы</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Рейс</th>
+                            <th>Тип</th>
+                            <th>Пассажиры</th>
+                            <th>Выдано</th>
+                            <th>Использовано</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recent-activations">
+                        <tr>
+                            <td><strong>SU 1234</strong></td>
+                            <td><span class="badge badge-food">Горячее питание</span></td>
+                            <td>180</td>
+                            <td>145</td>
+                            <td>98</td>
+                            <td><span class="badge badge-active">Активен</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>SU 5678</strong></td>
+                            <td><span class="badge badge-water">Вода</span></td>
+                            <td>120</td>
+                            <td>89</td>
+                            <td>67</td>
+                            <td><span class="badge badge-active">Активен</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>DP 9012</strong></td>
+                            <td><span class="badge badge-food">Горячее питание</span></td>
+                            <td>95</td>
+                            <td>72</td>
+                            <td>72</td>
+                            <td><span class="badge badge-completed">Завершён</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Create Voucher Page -->
+        <div id="page-create-voucher" style="display: none;">
+            <div class="form-section">
+                <h3>Создание ваучеров на рейс</h3>
+                <form id="voucher-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Номер рейса</label>
+                            <input type="text" id="flight-number" placeholder="Например: SU 1234" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Количество пассажиров</label>
+                            <input type="number" id="passengers-count" placeholder="Например: 180" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Тип задержки</label>
+                        <select id="voucher-type" required>
+                            <option value="">Выберите тип</option>
+                            <option value="water">Вода (задержка 2+ часа)</option>
+                            <option value="food">Горячее питание (задержка 4+ часа)</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Сумма ваучера (₽)</label>
+                            <input type="number" id="voucher-amount" placeholder="Например: 500" value="500">
+                        </div>
+                        <div class="form-group">
+                            <label>Время действия (часы)</label>
+                            <input type="number" id="voucher-hours" placeholder="Например: 24" value="24">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Комментарий (необязательно)</label>
+                        <input type="text" id="voucher-comment" placeholder="Дополнительная информация">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Создать ваучеры</button>
+                </form>
+            </div>
+
+            <div id="qr-result" style="display: none;">
+                <div class="qr-display">
+                    <h3>QR-код для стойки информации</h3>
+                    <div class="qr-code">
+                        <svg width="250" height="250" viewBox="0 0 250 250" id="qr-svg">
+                            <rect width="250" height="250" fill="#fff"/>
+                        </svg>
+                    </div>
+                    <div class="qr-info" id="qr-info"></div>
+                    <div class="actions" style="justify-content: center; margin-top: 24px;">
+                        <button class="btn btn-secondary" onclick="printQR()">🖨️ Печать</button>
+                        <button class="btn btn-secondary" onclick="downloadQR()">💾 Скачать</button>
+                        <button class="btn btn-primary" onclick="showOnScreen()">📺 Показать на экране</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Flights Page -->
+        <div id="page-active-flights" style="display: none;">
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Активные рейсы с задержкой</h3>
+                    <button class="btn btn-primary" onclick="navigate('create-voucher')">+ Создать ваучеры</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Рейс</th>
+                            <th>Направление</th>
+                            <th>Задержка</th>
+                            <th>Пассажиры</th>
+                            <th>Тип ваучера</th>
+                            <th>Выдано/Всего</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="active-flights-list">
+                        <tr>
+                            <td><strong>SU 1234</strong></td>
+                            <td>Москва → Санкт-Петербург</td>
+                            <td>4ч 15мин</td>
+                            <td>180</td>
+                            <td><span class="badge badge-food">Горячее питание</span></td>
+                            <td>145/180</td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 11px;" onclick="showFlightQR('SU 1234')">QR</button>
+                                <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 11px;" onclick="closeFlight('SU 1234')">Закрыть</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>SU 5678</strong></td>
+                            <td>Москва → Казань</td>
+                            <td>2ч 30мин</td>
+                            <td>120</td>
+                            <td><span class="badge badge-water">Вода</span></td>
+                            <td>89/120</td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 11px;" onclick="showFlightQR('SU 5678')">QR</button>
+                                <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 11px;" onclick="closeFlight('SU 5678')">Закрыть</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>DP 3456</strong></td>
+                            <td>Москва → Сочи</td>
+                            <td>3ч 45мин</td>
+                            <td>150</td>
+                            <td><span class="badge badge-water">Вода</span></td>
+                            <td>112/150</td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 11px;" onclick="showFlightQR('DP 3456')">QR</button>
+                                <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 11px;" onclick="closeFlight('DP 3456')">Закрыть</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Statistics Page -->
+        <div id="page-statistics" style="display: none;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="label">Ваучеров за месяц</div>
+                    <div class="value">2,847</div>
+                    <div class="sub">+15% к прошлому месяцу</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Использовано</div>
+                    <div class="value">1,923</div>
+                    <div class="sub">67.5% от выданных</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Общая сумма</div>
+                    <div class="value">962K ₽</div>
+                    <div class="sub">Средний чек: 500 ₽</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Популярный ресторан</div>
+                    <div class="value" style="font-size: 24px;">BLACK STAR</div>
+                    <div class="sub">342 погашения</div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-header">
+                    <h3>Статистика по аэропортам</h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Аэропорт</th>
+                            <th>Ваучеров выдано</th>
+                            <th>Использовано</th>
+                            <th>Сумма</th>
+                            <th>Рейсов с задержкой</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>SVO - Шереметьево</strong></td>
+                            <td>1,234</td>
+                            <td>845 (68%)</td>
+                            <td>422,500 ₽</td>
+                            <td>23</td>
+                        </tr>
+                        <tr>
+                            <td><strong>VKO - Внуково</strong></td>
+                            <td>892</td>
+                            <td>598 (67%)</td>
+                            <td>299,000 ₽</td>
+                            <td>18</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DME - Домодедово</strong></td>
+                            <td>721</td>
+                            <td>480 (67%)</td>
+                            <td>240,500 ₽</td>
+                            <td>15</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast"></div>
+
+<!-- QR Modal -->
+<div class="modal" id="qr-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modal-title">QR-код рейса</h3>
+            <div class="close-btn" onclick="closeModal()">&times;</div>
+        </div>
+        <div style="text-align: center;">
+            <div class="qr-code">
+                <svg width="200" height="200" viewBox="0 0 200 200" id="modal-qr-svg">
+                    <rect width="200" height="200" fill="#fff"/>
+                </svg>
+            </div>
+            <div id="modal-qr-info" style="margin-top: 20px; font-size: 13px; color: var(--text2); line-height: 1.8;"></div>
+        </div>
+        <div class="actions">
+            <button class="btn btn-secondary" onclick="closeModal()">Закрыть</button>
+            <button class="btn btn-primary" onclick="printQR()">Печать</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Navigation
+function navigate(page) {
+    // Hide all pages
+    document.querySelectorAll('[id^="page-"]').forEach(el => {
+        el.style.display = 'none';
+    });
+    
+    // Show selected page
+    document.getElementById('page-' + page).style.display = 'block';
+    
+    // Update nav
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    document.querySelector(`[data-page="${page}"]`).classList.add('active');
+    
+    // Update title
+    const titles = {
+        'dashboard': 'Дашборд',
+        'create-voucher': 'Создать ваучеры',
+        'active-flights': 'Активные рейсы',
+        'statistics': 'Статистика'
+    };
+    document.getElementById('page-title').textContent = titles[page];
+}
+
+// Nav item clicks
+document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+        navigate(item.dataset.page);
+    });
+});
+
+// Form submission
+document.getElementById('voucher-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const flightNumber = document.getElementById('flight-number').value;
+    const passengersCount = document.getElementById('passengers-count').value;
+    const voucherType = document.getElementById('voucher-type').value;
+    const voucherAmount = document.getElementById('voucher-amount').value;
+    const voucherHours = document.getElementById('voucher-hours').value;
+    
+    if (!flightNumber || !passengersCount || !voucherType) {
+        showToast('Заполните все обязательные поля');
+        return;
+    }
+    
+    // Generate QR
+    generateQR('qr-svg', 250);
+    
+    const typeText = voucherType === 'water' ? 'Вода' : 'Горячее питание';
+    document.getElementById('qr-info').innerHTML = `
+        <strong>Рейс:</strong> ${flightNumber}<br>
+        <strong>Тип:</strong> ${typeText}<br>
+        <strong>Пассажиры:</strong> ${passengersCount}<br>
+        <strong>Сумма:</strong> ${voucherAmount} ₽<br>
+        <strong>Действителен:</strong> ${voucherHours} часов
+    `;
+    
+    document.getElementById('qr-result').style.display = 'block';
+    
+    showToast(`Ваучеры созданы для рейса ${flightNumber}`);
+    
+    // Update stats
+    document.getElementById('stat-active-flights').textContent = 
+        parseInt(document.getElementById('stat-active-flights').textContent) + 1;
+});
+
+// Generate QR Code
+function generateQR(svgId, size) {
+    const svg = document.getElementById(svgId);
+    let qrHTML = '';
+    const gridSize = 25;
+    const cellSize = size / gridSize;
+    
+    for (let y = 0; y < gridSize; y++) {
+        for (let x = 0; x < gridSize; x++) {
+            if (Math.random() > 0.5) {
+                qrHTML += `<rect x="${x * cellSize}" y="${y * cellSize}" width="${cellSize}" height="${cellSize}" fill="#000"/>`;
+            }
+        }
+    }
+    
+    svg.innerHTML = `<rect width="${size}" height="${size}" fill="#fff"/>` + qrHTML;
+}
+
+// Show toast
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// Show flight QR
+function showFlightQR(flightNumber) {
+    document.getElementById('modal-title').textContent = `QR-код рейса ${flightNumber}`;
+    generateQR('modal-qr-svg', 200);
+    document.getElementById('modal-qr-info').innerHTML = `
+        <strong>Рейс:</strong> ${flightNumber}<br>
+        <strong>Тип:</strong> Горячее питание<br>
+        <strong>Сумма:</strong> 500 ₽
+    `;
+    document.getElementById('qr-modal').classList.add('show');
+}
+
+// Close modal
+function closeModal() {
+    document.getElementById('qr-modal').classList.remove('show');
+}
+
+// Close flight
+function closeFlight(flightNumber) {
+    if (confirm(`Закрыть рейс ${flightNumber}?`)) {
+        showToast(`Рейс ${flightNumber} закрыт`);
+    }
+}
+
+// Print QR
+function printQR() {
+    showToast('Отправка на печать...');
+}
+
+// Download QR
+function downloadQR() {
+    showToast('QR-код сохранён');
+}
+
+// Show on screen
+function showOnScreen() {
+    showToast('QR отображается на экране стойки');
+}
+
+// Close modal on background click
+document.getElementById('qr-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeModal();
+    }
+});
+</script>
+</body>
+</html>
